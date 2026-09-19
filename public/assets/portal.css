@@ -1,0 +1,201 @@
+/* =========================================================
+   AL MUTQON - Portal Verifikasi (index.php)
+   Adaptasi visual ala referensi: white bg, dark navy,
+   muted blue-gray, soft borders, rounded besar, subtle shadow.
+   Hanya dimuat di index.php (setelah app.css); tidak mengubah
+   struktur, fungsi, routing, atau logic.
+   ========================================================= */
+
+:root {
+    /* Portal menggunakan warna pokok dari design system app.css:
+       forest/ink/paper/gold + varian hitamnya. */
+    --pv-navy: var(--forest);
+    --pv-navy-deep: var(--forest-dark);
+    --pv-muted: var(--ink-soft);
+    --pv-faint: var(--ink-faint);
+    --pv-line: var(--line);
+    --pv-line-strong: var(--line-strong);
+    --pv-soft: var(--forest-soft);
+    --pv-input: #FFFFFF;
+    --pv-shadow: 0 12px 24px -6px rgba(0,0,0,.10), 0 4px 8px -4px rgba(0,0,0,.06);
+    --pv-shadow-sm: 0 4px 12px -2px rgba(0,0,0,.08), 0 2px 6px -2px rgba(0,0,0,.06);
+    --pv-focus: rgba(22, 101, 52, .14);
+    --pv-scanline: rgba(22, 101, 52, .25);
+}
+
+body:has(.beranda) { background: var(--paper); }
+
+/* ---------- Sidebar kiri (gelap ala footer almutqon) ---------- */
+.beranda__side {
+    background: var(--footer-bg);
+    border-top: 3px solid var(--gold);
+    color: #fff;
+}
+.beranda__brand { color: #fff; }
+.beranda__title { font-size: 16px; font-weight: 700; letter-spacing: .02em; color: #fff; }
+.beranda__sub { color: var(--gold-soft); letter-spacing: .14em; }
+.beranda__foot {
+    background: var(--footer-bg);
+    border-top: 2px solid var(--gold);
+    color: var(--gold-soft);
+}
+
+@media (min-width: 920px) {
+    .beranda__side { border-top: 0; border-right: 3px solid var(--gold); }
+    .beranda__foot { border-top: 1px solid rgba(255, 255, 255, .18); }
+}
+
+/* ---------- Top navigation (segmented) ---------- */
+.landing__nav {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+    padding: 6px;
+    background: var(--pv-soft);
+    border: 1px solid var(--pv-line);
+    border-radius: 18px;
+    box-shadow: var(--pv-shadow-sm);
+    margin-bottom: -10px;
+}
+.landing__tab {
+    font: 600 13.5px var(--font-ui);
+    color: var(--pv-muted);
+    padding: 13px 8px;
+    border-radius: 13px;
+}
+.landing__tab:hover { color: var(--pv-navy); }
+.landing__tab.tab-active {
+    background: var(--card);
+    color: var(--pv-navy);
+}
+
+/* ---------- Panels ---------- */
+.landing__panel {
+    background: transparent;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+}
+.landing__icon {
+    width: 56px; height: 56px;
+    background: var(--pv-soft);
+    color: var(--pv-navy);
+}
+.landing__panel h2 { font-size: 26px; font-weight: 700; letter-spacing: -.01em; color: var(--pv-navy); }
+.landing__panel > p { color: var(--pv-muted); font-size: 14px; }
+.landing__panel .field__label { color: var(--pv-navy); }
+
+/* ---------- Form (Cek Dokumen & Portal Staff) ---------- */
+.landing__panel .stack { text-align: left; }
+.landing__panel .input {
+    height: 50px;
+    background: var(--pv-input);
+    border: 1.5px solid var(--pv-line);
+    border-radius: 14px;
+    font-size: 16px;
+    padding: 0 16px;
+}
+.landing__panel .input:focus { border-color: var(--pv-navy); box-shadow: 0 0 0 3px var(--pv-focus); }
+.landing__panel .input::placeholder { color: var(--pv-faint); }
+.landing__panel .code-input {
+    height: 52px;
+    font-size: 18px;
+    font-weight: 600;
+    letter-spacing: .14em;
+    text-align: center;
+    font-family: var(--font-ui);
+}
+.landing__panel .btn-primary {
+    height: 52px;
+    background: var(--pv-navy);
+    border-radius: 14px;
+    font-size: 15px;
+    font-weight: 700;
+}
+.landing__panel .btn-primary:hover { background: var(--pv-navy-deep); }
+
+/* ---------- SCAN QR ---------- */
+.scan-frame {
+    border: 2px solid var(--pv-line);
+    border-radius: 22px;
+    background: var(--pv-input);
+    box-shadow: none;
+    position: relative;
+    padding: 12px;
+}
+.scan-frame .scan-inner {
+    position: relative;
+    border: 1px solid var(--pv-line-strong);
+    border-radius: 14px;
+    overflow: hidden;
+    min-height: 240px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.scan-inner #reader { width: 100%; border-radius: 0; }
+.scan-inner .scan-empty {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 24px;
+    text-align: center;
+    background: var(--pv-input);
+}
+.scan-empty__icon { color: var(--pv-faint); display: inline-flex; margin-bottom: 6px; }
+.scan-empty__title { font-size: 14.5px; font-weight: 600; color: var(--pv-muted); }
+.scan-empty__file {
+    font-size: 13.5px;
+    color: var(--pv-navy);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    cursor: pointer;
+}
+.scan-info {
+    position: absolute;
+    top: 20px; right: 10px;
+    z-index: 3;
+    width: 24px; height: 24px;
+    border: 1px solid var(--pv-line);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--pv-muted);
+    background: var(--card);
+    cursor: help;
+}
+
+.scan-line {
+    display: none;
+    position: absolute;
+    left: 18px; right: 18px; top: 12px;
+    height: 3px;
+    border-radius: 99px;
+    background: var(--pv-scanline);
+    animation: pv-scanmove 2.6s ease-in-out infinite;
+    pointer-events: none;
+}
+.scan-frame.scanning .scan-line { display: block; }
+@keyframes pv-scanmove {
+    0%, 100% { top: 12px; }
+    50% { top: calc(100% - 16px); }
+}
+
+/* ---------- PORTAL STAFF (kiri-aligned) ---------- */
+.landing__panel--staff { text-align: left; }
+.landing__panel--staff > p { max-width: 420px; }
+.landing__panel--staff .stack { margin-top: 4px; }
+
+/* ---------- Hasil verifikasi (State B / C) ---------- */
+.verify-wrap { background: var(--paper); }
+.verify-sheet {
+    border-color: var(--pv-line);
+    border-radius: 18px;
+    box-shadow: var(--pv-shadow);
+}
+.verify-head__title { color: #fff; }
+.verify-kicker h2 { color: var(--pv-navy); }
