@@ -3,6 +3,32 @@
    Design system kustom (tanpa framework).
    ========================================================= */
 
+/* Ikon Material Symbols di-host lokal agar tetap tampil
+   meski Google Fonts tidak dapat diakses (jaringan diblokir/mode offline). */
+@font-face {
+    font-family: 'Material Symbols Rounded';
+    font-style: normal;
+    font-weight: 100 700;
+    font-display: swap;
+    src: url('fonts/material-symbols-rounded.woff2') format('woff2');
+}
+.material-symbols-rounded {
+    font-family: 'Material Symbols Rounded';
+    font-weight: normal;
+    font-style: normal;
+    line-height: 1;
+    letter-spacing: normal;
+    text-transform: none;
+    display: inline-block;
+    white-space: nowrap;
+    word-wrap: normal;
+    direction: ltr;
+    font-feature-settings: 'liga';
+    -webkit-font-feature-settings: 'liga';
+    -webkit-font-smoothing: antialiased;
+    font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+
 :root {
     /* Diselaraskan ke model ALMUTQON (almutqon/css/base.css):
        forest #166534, accent amber #F59E0B, surface #F8FAFC,
@@ -74,7 +100,7 @@ code, .mono { font-family: var(--font-mono); }
 
 .hidden { display: none !important; }
 .page { max-width: 1100px; margin: 0 auto; padding: 28px 20px 64px; }
-.page--wide { max-width: 1200px; }
+.page--wide { max-width: none; padding: 28px 32px 56px; }
 .grid2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
 .grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
 .grid4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
@@ -120,23 +146,6 @@ code, .mono { font-family: var(--font-mono); }
 .account-menu__item--danger { color: var(--err); }
 .account-menu__item--danger svg { color: var(--err); }
 .account-menu__sep { border-top: 1px solid var(--line); margin: 6px 16px; }
-.account-menu__theme { display: flex; align-items: center; gap: 10px; padding: 8px 16px; min-height: 44px; }
-.account-menu__theme-label { font-size: 13.5px; font-weight: 600; color: var(--ink); margin: 0; }
-.account-menu__theme .theme-seg { margin-left: auto; border: 1px solid var(--line); background: var(--paper); padding: 4px; gap: 4px; border-radius: 12px; }
-.theme-seg--icons .theme-seg__opt { flex: none; width: 36px; height: 34px; padding: 0; border-radius: 9px; color: var(--ink-faint); }
-.theme-seg--icons .theme-seg__opt:hover { color: var(--forest); background: var(--paper); }
-.theme-seg--icons .theme-seg__opt.active { background: var(--card); color: var(--forest); box-shadow: 0 1px 3px rgba(0,0,0,.12); }
-.theme-seg { display: flex; gap: 4px; padding: 4px; background: var(--paper); border: 1px solid var(--line); border-radius: 12px; }
-.theme-seg__opt {
-    flex: 1; display: flex; align-items: center; justify-content: center; gap: 6px;
-    padding: 8px 4px; border: 0; border-radius: 8px; background: transparent;
-    font: 600 12.5px var(--font-ui); color: var(--ink-soft); cursor: pointer;
-    transition: background var(--ani), color var(--ani), box-shadow var(--ani);
-}
-.theme-seg__opt svg { flex-shrink: 0; }
-.theme-seg__opt:hover { color: var(--forest); }
-.theme-seg__opt.active { background: var(--card); color: var(--forest); box-shadow: 0 1px 3px rgba(0,0,0,.12); }
-.theme-seg--big .theme-seg__opt { padding: 11px 4px; font-size: 13.5px; }
 .akun-toast {
     position: fixed; top: 14px; left: 50%; transform: translateX(-50%); z-index: 80;
     background: var(--forest); color: #fff; padding: 11px 20px; border-radius: 12px;
@@ -146,86 +155,29 @@ code, .mono { font-family: var(--font-mono); }
 .akun-toast--err { background: var(--err); }
 .akun-toast.hide { opacity: 0; pointer-events: none; }
 
-/* ===================================================================
-   TEMA GELAP per akun (html[data-theme='dark'], dipasang saat login)
-   Halaman publik (index/staff) tanpa atribut → selalu terang.
-   =================================================================== */
-:root[data-theme='dark'] {
-    --forest: #4ADE80;
-    --forest-dark: #22C55E;
-    --forest-mid: #22C55E;
-    --forest-soft: #14532D;
-    --forest-rgb: 74, 222, 128;
-    --gold: #FBBF24;
-    --gold-soft: #78350F;
-    --paper: #0B1120;
-    --card: #1E293B;
-    --line: #334155;
-    --line-strong: #475569;
-    --ink: #F1F5F9;
-    --ink-soft: #CBD5E1;
-    --ink-faint: #94A3B8;
-    --ok: #4ADE80;
-    --ok-soft: #14532D;
-    --err: #F87171;
-    --err-soft: #7F1D1D;
-    --warn: #FBBF24;
-    --warn-soft: #78350F;
-    --blue-ink: #93C5FD;
-    --blue-soft: #1E3A8A;
-    --footer-bg: #060B16;
-}
-:root[data-theme='dark'] ::selection { background: var(--forest); color: #060B16; }
-:root[data-theme='dark'] input, :root[data-theme='dark'] textarea, :root[data-theme='dark'] select { color-scheme: dark; }
-:root[data-theme='dark'] .tab-active { background: #1E293B; }
-:root[data-theme='dark'] .btn-light { background: #1E293B; border-color: var(--line); }
-:root[data-theme='dark'] .btn-light:hover { border-color: var(--line-strong); }
-:root[data-theme='dark'] .input, :root[data-theme='dark'] .select { background: #0B1120; }
-:root[data-theme='dark'] .alert-ok { border-color: #166534; }
-:root[data-theme='dark'] .alert-err { border-color: #7F1D1D; }
-:root[data-theme='dark'] .alert-warn { border-color: #78350F; }
-:root[data-theme='dark'] .table tbody tr:hover { background: rgba(148,163,184,.08); }
-:root[data-theme='dark'] .doc { background: var(--card); }
-:root[data-theme='dark'] .kv { background: var(--card); }
-:root[data-theme='dark'] .badge-muted { background: #334155; color: #CBD5E1; }
-:root[data-theme='dark'] .badge-gold { background: var(--gold-soft); color: #FDE68A; }
-:root[data-theme='dark'] .strength { background: #334155; }
-:root[data-theme='dark'] .dropzone { background: var(--card); }
-:root[data-theme='dark'] .seal { border-color: #166534; }
-:root[data-theme='dark'] .masthead__logo, :root[data-theme='dark'] .beranda__logo, :root[data-theme='dark'] .login__logo { background: #fff; }
-
-/* ---------- Masthead institusi (gelap ala footer almutqon; menempel saat scroll) ---------- */
+/* ---------- Topbar area konten (menyamar trend dasboard admin almutqon) ---------- */
 .masthead {
     position: sticky; top: 0; z-index: 40;
-    border-top: 3px solid var(--gold); background: var(--footer-bg); color: #fff;
-    box-shadow: 0 2px 12px rgba(0,0,0,.18);
+    background: var(--card); border-bottom: 1px solid var(--line);
+    box-shadow: 0 1px 3px rgba(15,23,42,.04);
 }
 .masthead__inner {
-    max-width: 1200px; margin: 0 auto; padding: 13px 20px;
-    display: flex; align-items: center; justify-content: space-between; gap: 16px;
+    max-width: none; margin: 0 auto; padding: 14px 32px;
+    display: flex; align-items: center; gap: 16px;
 }
-.masthead__brand { display: flex; align-items: center; gap: 14px; text-decoration: none; color: #fff; min-width: 0; }
-.masthead__logo {
-    width: 46px; height: 46px; object-fit: contain; background: #fff;
-    border-radius: 8px; padding: 4px; flex-shrink: 0;
-}
-.masthead__title { font-family: var(--font-display); font-size: 17px; letter-spacing: .05em; line-height: 1.25; }
-.masthead__sub {
-    display: block; font-family: var(--font-ui); font-size: 10.5px; letter-spacing: .18em;
-    text-transform: uppercase; color: var(--gold-on-dark); margin-top: 3px;
-}
+.masthead__title { flex: 1; font-family: var(--font-display); font-size: 20px; font-weight: 800; letter-spacing: -.01em; }
 
 /* Tombol hamburger pembuka drawer: selalu tampil (kiri bar atas) */
 .nav-toggle {
     display: inline-flex;
-    flex-direction: column; justify-content: center; align-items: center; gap: 5px;
-    width: 42px; height: 42px; padding: 0; cursor: pointer; flex-shrink: 0;
-    background: transparent; border: 1px solid rgba(255,255,255,.28); border-radius: 10px;
-    transition: border-color var(--ani), background var(--ani);
+    align-items: center; justify-content: center;
+    width: 40px; height: 40px; padding: 0; cursor: pointer; flex-shrink: 0;
+    background: transparent; border: 1px solid var(--line); border-radius: 10px;
+    color: var(--ink); transition: border-color var(--ani), background var(--ani), color var(--ani);
 }
-.nav-toggle span { display: block; width: 20px; height: 2px; border-radius: 2px; background: #fff; }
-.nav-toggle:hover { border-color: #fff; }
-.nav-toggle[aria-expanded="true"] { background: rgba(255,255,255,.08); border-color: #fff; }
+.nav-toggle .material-symbols-rounded { font-size: 24px; }
+.nav-toggle:hover { background: var(--paper); border-color: var(--line-strong); }
+.nav-toggle[aria-expanded="true"] { background: var(--paper); border-color: var(--forest); color: var(--forest); }
 
 /* Chip identitas: avatar polos (tanpa hiasan), lingkaran 42px sejajar hamburger */
 .user-chip {
@@ -296,18 +248,29 @@ code, .mono { font-family: var(--font-mono); }
 input[type="date"].input { min-height: 45px; }
 
 /* ---------- Panel / kartu ---------- */
-.panel { background: var(--card); border: 1px solid var(--line); border-radius: 14px; box-shadow: 0 1px 2px rgba(30,43,39,.04); }
+.panel { background: var(--card); border: 1px solid var(--line); border-radius: 14px; box-shadow: 0 4px 16px -4px rgba(15,23,42,.08), 0 2px 6px -2px rgba(15,23,42,.06); }
 .panel__hd { padding: 18px 22px; border-bottom: 1px solid var(--line); display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
 .panel__title { font-family: var(--font-display); font-size: 17px; }
 .panel__bd { padding: 22px; }
-.panel--edge > .panel__hd { border-top: 3px solid var(--gold); }
+.panel--edge > .panel__hd { border-top: 0; }
 .panel--sticky { position: sticky; top: 70px; }
 
-/* ---------- Statistik ---------- */
-.stat { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 18px 20px; }
-.stat__label { font-size: 11px; font-weight: 600; letter-spacing: .09em; text-transform: uppercase; color: var(--ink-faint); }
-.stat__value { font-family: var(--font-display); font-size: 30px; line-height: 1.15; margin-top: 6px; color: var(--forest); font-variant-numeric: tabular-nums; }
-.stat--gold .stat__value { color: var(--gold); }
+/* ---------- Statistik (kartu ala dashboard admin almutqon) ---------- */
+.stat { background: var(--card); border: 1px solid var(--line); border-radius: 14px; box-shadow: 0 4px 16px -4px rgba(15,23,42,.08), 0 2px 6px -2px rgba(15,23,42,.06); padding: 18px 20px; display: flex; align-items: center; gap: 14px; min-width: 0; }
+.stat__icon {
+    width: 48px; height: 48px; border-radius: 12px; flex: none;
+    background: #64748B; color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 24px; line-height: 1;
+}
+.stat__icon--green { background: var(--forest); }
+.stat__icon--teal  { background: #0D9488; }
+.stat__icon--amber { background: var(--gold); }
+.stat__icon--slate { background: #64748B; }
+.stat__body { display: block; min-width: 0; }
+.stat__label { display: block; font-size: 11.5px; font-weight: 600; color: #64748B; margin-top: 3px; line-height: 1.3; }
+.stat__value { display: block; font-family: var(--font-display); font-size: 22px; font-weight: 800; line-height: 1.2; color: #1E293B; font-variant-numeric: tabular-nums; }
+.stat--gold .stat__value { color: var(--ink); }
 
 /* ---------- Badge ---------- */
 .badge { display: inline-flex; align-items: center; gap: 6px; font-size: 11.5px; font-weight: 600; padding: 3px 9px; border-radius: 999px; white-space: nowrap; }
@@ -340,6 +303,7 @@ table.table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
 /* ---------- Daftar dokumen ---------- */
 .doclist { display: flex; flex-direction: column; gap: 12px; max-height: 640px; overflow: auto; padding-right: 4px; }
 .doc { background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 16px; }
+.doc.is-off { opacity: .55; border-color: var(--line-strong); filter: saturate(.7); }
 .doc__top { display: flex; gap: 12px; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; }
 .doc__meta { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 8px; }
 .doc__title { font-family: var(--font-display); font-size: 16px; }
@@ -418,7 +382,7 @@ table.table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
 .kv__label { font-size: 11px; letter-spacing: .06em; text-transform: uppercase; color: var(--ink-faint); font-weight: 600; margin-bottom: 4px; }
 .kv__value { font-family: var(--font-mono); font-weight: 700; font-size: 22px; letter-spacing: .12em; }
 .copy-row { display: flex; gap: 8px; align-items: center; }
-.copy-row code { flex: 1; font-size: 12px; color: var(--blue-ink); word-break: break-all; }
+.copy-row code { flex: 1; font-size: 12px; color: var(--forest); word-break: break-all; }
 
 /* ---------- Scanner ---------- */
 #reader video { border-radius: 0; }
@@ -566,9 +530,13 @@ body:has(.beranda) { padding-bottom: 42px; }
 }
 
 /* ---------- Dashboard: grid buat dokumen + riwayat ---------- */
-.dash-grid { display: grid; grid-template-columns: 1fr 1.7fr; gap: 16px; align-items: start; }
+.dash-grid { display: grid; grid-template-columns: 1fr 2.2fr; gap: 24px; align-items: start; }
 
 /* ---------- Responsif ---------- */
+@media (max-width: 960px) {
+    .grid4 { grid-template-columns: repeat(2, 1fr); }
+}
+
 @media (max-width: 760px) {
     .dash-grid { grid-template-columns: 1fr; }
     .panel--sticky { position: static; top: auto; }
@@ -637,6 +605,13 @@ body.no-scroll { overflow: hidden; }
 
 .sidebar__nav { flex: 1; padding: 16px 12px; overflow-y: auto; display: flex; flex-direction: column; gap: 4px; }
 .sidebar__sep { border-top: 1px solid rgba(255,255,255,.08); margin: 10px 4px; }
+.sidebar__group {
+    display: flex; align-items: center;
+    margin: 14px 14px 4px; padding: 0;
+    font-size: 10.5px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase;
+    color: #64748B;
+}
+.sidebar__group:first-child { margin-top: 2px; }
 
 .sidebar__nav-link {
     display: flex; align-items: center; gap: 12px;
@@ -657,10 +632,8 @@ body.no-scroll { overflow: hidden; }
     font-weight: 700; display: flex; align-items: center; justify-content: center; font-size: 17px;
     object-fit: cover; flex-shrink: 0;
 }
-.sidebar__user-name { font-weight: 700; font-size: 13.5px; line-height: 1.3; overflow-wrap: anywhere; }
-.sidebar__user-role { font-size: 11.5px; color: #94A3B8; margin-top: 2px; }
-.sidebar__themes { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
-.sidebar__themes .theme-seg { margin: 0; }
+.sidebar__user-name { display: block; font-weight: 700; font-size: 13.5px; line-height: 1.3; overflow-wrap: anywhere; }
+.sidebar__user-role { display: block; font-size: 11.5px; color: #94A3B8; margin-top: 2px; min-width: 0; }
 .sidebar__logout {
     display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%;
     padding: 10px 14px; border-radius: 10px; border: 1px solid rgba(255,255,255,.14);
@@ -678,11 +651,44 @@ body.no-scroll { overflow: hidden; }
 }
 .filter-tab:hover { color: var(--forest); border-color: var(--forest); }
 .filter-tab.active { background: var(--forest); color: #fff; border-color: var(--forest); }
-:root[data-theme='dark'] .filter-tab { background: #1E293B; }
 .search-input { max-width: 300px; }
 .pager { display: flex; align-items: center; justify-content: flex-end; gap: 10px; padding-top: 14px; }
 .pager .is-off { opacity: .45; pointer-events: none; }
 @media (max-width: 760px) {
     .filter-tabs { width: 100%; }
     .search-input { max-width: none; flex: 1; }
+}
+
+body:has(.sidebar) { background: #F1F5F9; }
+body:has(.sidebar) .page { max-width: none; padding: 28px 32px 56px; }
+@media (max-width: 760px) {
+    body:has(.sidebar) .page { padding: 20px 14px 48px; }
+}
+
+/* ===================================================================
+   SHELL DESKTOP — SIDEBAR PERSISTEN (>=1024px)
+   <body> menjadi grid dua kolom hanya pada halaman yang memuat .sidebar
+   (halaman staff). Di bawah 1024px behavior drawer lama tetap berlaku.
+   =================================================================== */
+@media (min-width: 1024px) {
+    body:has(.sidebar) {
+        display: grid;
+        grid-template-columns: clamp(236px, 20vw, 300px) minmax(0, 1fr);
+        grid-template-rows: auto 1fr;
+        min-height: 100vh;
+    }
+
+    body:has(.sidebar) .sidebar {
+        position: sticky; top: 0; bottom: auto;
+        width: auto; height: 100vh;
+        transform: none; box-shadow: none;
+        grid-row: 1 / -1;
+    }
+    body:has(.sidebar) .sidebar.open { transform: none; box-shadow: none; }
+
+    body:has(.sidebar) .masthead { position: sticky; top: 0; grid-column: 2; min-width: 0; }
+    body:has(.sidebar) main { grid-column: 2; min-width: 0; }
+
+    body:has(.sidebar) .nav-toggle { display: none; }
+    body:has(.sidebar) .sidebar-backdrop { display: none; }
 }

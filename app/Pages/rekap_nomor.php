@@ -44,15 +44,14 @@ $pageTitle = 'Rekap Penomoran';
 $navActive = 'rekap_nomor';
 ?>
 <!DOCTYPE html>
-<html lang="id" data-theme="<?= $akun['theme'] ?>">
+<html lang="id">
 <head>
-<script>try{if(document.documentElement.getAttribute('data-theme')==='system'){document.documentElement.setAttribute('data-theme',matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');}}catch(e){}</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Rekap Nomor - AL MUTQON</title>
 <link rel="icon" href="assets/1.png">
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link href="assets/app.css?v=20260919c" rel="stylesheet">
+<link href="assets/app.css?v=20260919l" rel="stylesheet">
 </head>
 <body>
 
@@ -62,16 +61,22 @@ $navActive = 'rekap_nomor';
 <main class="page page--wide">
     <div class="grid3" style="margin-bottom:22px">
         <div class="stat">
-            <p class="stat__label">Nomor Terakhir</p>
-            <p class="stat__value">#<?= str_pad((string) $max, 3, '0', STR_PAD_LEFT) ?></p>
+            <span class="stat__body">
+                <span class="stat__value">#<?= str_pad((string) $max, 3, '0', STR_PAD_LEFT) ?></span>
+                <span class="stat__label">Nomor Terakhir</span>
+            </span>
         </div>
         <div class="stat">
-            <p class="stat__label">Nomor Terpakai</p>
-            <p class="stat__value"><?= count($byNomor) ?></p>
+            <span class="stat__body">
+                <span class="stat__value"><?= count($byNomor) ?></span>
+                <span class="stat__label">Nomor Terpakai</span>
+            </span>
         </div>
-        <div class="stat stat--gold">
-            <p class="stat__label">Lompat / Belum Terpakai</p>
-            <p class="stat__value"><?= count($gap) ?></p>
+        <div class="stat">
+            <span class="stat__body">
+                <span class="stat__value"><?= count($gap) ?></span>
+                <span class="stat__label">Lompat / Belum Terpakai</span>
+            </span>
         </div>
     </div>
 

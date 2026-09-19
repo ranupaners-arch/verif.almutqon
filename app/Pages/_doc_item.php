@@ -7,15 +7,15 @@
         <div style="min-width:0">
             <div class="doc__meta">
                 <?php if (($doc['jenis'] ?? 'dokumen') === 'invoice' || $doc['nomor_urut'] === null): ?>
-                    <span class="badge badge-gold">Invoice</span>
+                    <span class="badge badge-muted">Invoice</span>
                 <?php else: ?>
                     <span class="badge badge-forest mono">#<?= str_pad((string) $doc['nomor_urut'], 3, '0', STR_PAD_LEFT) ?></span>
                 <?php endif; ?>
                 <span class="mono" style="color:var(--gold);font-weight:700;font-size:12.5px"><?= htmlspecialchars($doc['code_6digit']) ?></span>
                 <?php if ($doc['pdf_path']): ?>
-                    <span class="badge badge-blue">PDF Terlampir</span>
+                    <span class="badge badge-ok">PDF Terlampir</span>
                 <?php else: ?>
-                    <span class="badge badge-warn">Menunggu PDF</span>
+                    <span class="badge badge-muted">Menunggu PDF</span>
                 <?php endif; ?>
                 <?php if (($doc['status'] ?? 'active') !== 'active'): ?>
                     <span class="badge badge-err">Dicabut</span>
@@ -54,6 +54,6 @@
     <div class="doc__foot">
         <span><strong><?= htmlspecialchars($doc['penerima']) ?></strong></span>
         <span><?= date('d M Y', strtotime($doc['tanggal_dokumen'])) ?></span>
-        <?php if (!empty($doc['staff_name'])): ?><span class="mono badge badge-blue" style="margin-left:auto">Oleh: <?= htmlspecialchars($doc['staff_name']) ?></span><?php endif; ?>
+        <?php if (!empty($doc['staff_name'])): ?><span class="mono badge badge-muted" style="margin-left:auto">Oleh: <?= htmlspecialchars($doc['staff_name']) ?></span><?php endif; ?>
     </div>
 </article>

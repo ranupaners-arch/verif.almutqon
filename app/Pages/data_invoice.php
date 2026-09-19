@@ -54,15 +54,14 @@ $pageTitle = 'Data Invoice';
 $navActive = 'data_invoice';
 ?>
 <!DOCTYPE html>
-<html lang="id" data-theme="<?= $akun['theme'] ?>">
+<html lang="id">
 <head>
-<script>try{if(document.documentElement.getAttribute('data-theme')==='system'){document.documentElement.setAttribute('data-theme',matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');}}catch(e){}</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Data Invoice - AL MUTQON</title>
 <link rel="icon" href="assets/1.png">
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link href="assets/app.css?v=20260919c" rel="stylesheet">
+<link href="assets/app.css?v=20260919l" rel="stylesheet">
 </head>
 <body>
 
@@ -72,8 +71,10 @@ $navActive = 'data_invoice';
 <main class="page page--wide">
     <!-- STATS -->
     <div class="stat" style="margin-bottom:22px">
-        <p class="stat__label">Total Invoice</p>
-        <p class="stat__value"><?= (int) ($stat['total'] ?? 0) ?></p>
+        <span class="stat__body">
+            <span class="stat__value"><?= (int) ($stat['total'] ?? 0) ?></span>
+            <span class="stat__label">Total Invoice</span>
+        </span>
     </div>
 
     <!-- NOTIFIKASI -->

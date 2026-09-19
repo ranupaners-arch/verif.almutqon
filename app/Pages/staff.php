@@ -51,7 +51,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !verify_csrf()) {
 <title>Portal Staff - AL MUTQON</title>
 <link rel="icon" href="assets/1.png">
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link href="assets/app.css?v=20260919c" rel="stylesheet">
+<link href="assets/app.css?v=20260919l" rel="stylesheet">
 </head>
 <body>
 <div class="login">

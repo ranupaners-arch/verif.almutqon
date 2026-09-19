@@ -1,5 +1,5 @@
 <?php
-// app/Pages/profil.php — profil staff: avatar, info akun, kegiatan terakhir, tema.
+// app/Pages/profil.php — profil staff: avatar, info akun, keamanan.
 // Akses: staff login (semua role).
 require dirname(__DIR__) . '/Bootstrap.php';
 
@@ -13,29 +13,6 @@ $akun = akun_ringkas($pdo, $staff_id);
 $roleLabel = ['direktur' => 'Direktur', 'admin' => 'Admin', 'staff' => 'Staff'][$akun['role']] ?? $akun['role'];
 $roleBadge = ['direktur' => 'badge-gold', 'admin' => 'badge-blue', 'staff' => 'badge-ok'][$akun['role']] ?? 'badge-muted';
 
-// Kegiatan terakhir: activity_log milik saya (10 terbaru).
-$actLabel = [
-    'create_doc'         => 'Membuat dokumen',
-    'delete_document'    => 'Menghapus dokumen',
-    'revoke_document'    => 'Mencabut dokumen',
-    'restore_document'   => 'Mengaktifkan dokumen',
-    'upload_pdf'         => 'Upload PDF dokumen',
-    'change_password'    => 'Mengubah password',
-    'login'              => 'Login',
-    'staff_add'          => 'Menambah staff',
-    'staff_edit'         => 'Mengubah data staff',
-    'staff_toggle'       => 'Ubah status staff',
-    'staff_reset_password' => 'Reset password staff',
-];
-$stmt = $pdo->prepare("SELECT action, description, created_at FROM activity_log WHERE staff_id = ? ORDER BY id DESC LIMIT 10");
-$stmt->execute([$staff_id]);
-$activities = $stmt->fetchAll();
-foreach ($activities as $i => $a) {
-    $activities[$i]['label'] = $actLabel[$a['action']] ?? $a['action'];
-    $ts = strtotime((string) $a['created_at']);
-    $activities[$i]['time'] = $ts ? date('d M Y H:i', $ts) : '-';
-}
-
 // Waktu terakhir ganti password.
 $stmt = $pdo->prepare("SELECT created_at FROM activity_log WHERE staff_id = ? AND action = 'change_password' ORDER BY id DESC LIMIT 1");
 $stmt->execute([$staff_id]);
@@ -46,15 +23,14 @@ $pageTitle = 'Profil Saya';
 $navActive = 'profil';
 ?>
 <!DOCTYPE html>
-<html lang="id" data-theme="<?= $akun['theme'] ?>">
+<html lang="id">
 <head>
-<script>try{if(document.documentElement.getAttribute('data-theme')==='system'){document.documentElement.setAttribute('data-theme',matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');}}catch(e){}</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Profil Saya - AL MUTQON</title>
 <link rel="icon" href="assets/1.png">
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link href="assets/app.css?v=20260919c" rel="stylesheet">
+<link href="assets/app.css?v=20260919l" rel="stylesheet">
 </head>
 <body>
 
@@ -136,41 +112,6 @@ $navActive = 'profil';
         </div>
     </div>
 
-    <div class="panel" style="margin-bottom:16px">
-        <div class="panel__hd">
-            <h2 class="panel__title">Aktivitas Terakhir Saya</h2>
-        </div>
-        <div class="panel__bd">
-            <?php if (count($activities) > 0): ?>
-            <div class="stack" style="gap:0">
-                <?php foreach ($activities as $a): ?>
-                <div style="display:flex;justify-content:space-between;gap:12px;align-items:center;padding:11px 0;border-bottom:1px solid var(--line)">
-                    <span style="font-size:13.5px;font-weight:600"><?= htmlspecialchars($a['label']) ?></span>
-                    <span class="faint" style="font-size:12px;flex-shrink:0"><?= htmlspecialchars($a['time']) ?></span>
-                </div>
-                <?php endforeach; ?>
-            </div>
-            <?php else: ?>
-            <p class="faint" style="font-size:13px">Belum ada aktivitas tercatat.</p>
-            <?php endif; ?>
-        </div>
-    </div>
-
-    <div class="panel" style="margin-bottom:16px">
-        <div class="panel__hd">
-            <h2 class="panel__title">Tema Tampilan</h2>
-        </div>
-        <div class="panel__bd">
-            <?php
-            $themeStored   = (string) $akun['theme'];
-            $themeVariant  = 'big';
-            $themeEndpoint = 'api/theme.php';
-            $themeCsrf     = csrf_token();
-            include __DIR__ . '/_theme_switch.php';
-            ?>
-            <p class="faint" style="font-size:12.5px;margin:10px 0 0">Sistem mengikuti terang/gelap perangkat secara otomatis.</p>
-        </div>
-    </div>
 </main>
 
 <script>

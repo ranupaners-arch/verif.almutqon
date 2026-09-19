@@ -5,16 +5,6 @@
 $navActive = $navActive ?? 'dashboard';
 $__sidebar = akun_ringkas($pdo, (int) $staff_id);
 $__isAdmin = in_array((string) ($__sidebar['role'] ?? 'staff'), ['admin', 'direktur'], true);
-$__nav = [
-    'dashboard'    => ['label' => 'Dashboard',    'href' => 'dashboard.php',     'icon' => 'home'],
-    'data_invoice' => ['label' => 'Data Invoice', 'href' => 'data_invoice.php',  'icon' => 'receipt_long'],
-    'rekap_nomor'  => ['label' => 'Rekap Nomor',  'href' => 'rekap_nomor.php',   'icon' => 'format_list_numbered'],
-];
-if ($__isAdmin) {
-    $__nav['manage_staff'] = ['label' => 'Manajemen Staff', 'href' => 'manage_staff.php', 'icon' => 'group'];
-}
-$__nav['profil']          = ['label' => 'Profil',         'href' => 'profil.php',          'icon' => 'account_circle'];
-$__nav['change_password'] = ['label' => 'Ganti Password', 'href' => 'change_password.php', 'icon' => 'key'];
 $__flash = $_SESSION['akun_flash'] ?? null;
 unset($_SESSION['akun_flash']);
 ?>
@@ -22,16 +12,30 @@ unset($_SESSION['akun_flash']);
 <aside class="sidebar" id="appSidebar" aria-label="Menu navigasi utama" aria-hidden="true">
     <div class="sidebar__brand">
         <img src="assets/1.png" alt="Logo AL MUTQON" class="sidebar__brand-img">
-        <span class="sidebar__brand-text">AL MUTQON<span class="sidebar__brand-sub">Verification System</span></span>
+        <span class="sidebar__brand-text">AL MUTQON<span class="sidebar__brand-sub">DASHBOARD</span></span>
     </div>
 
     <nav class="sidebar__nav">
-        <?php foreach ($__nav as $__k => $__item): ?>
-        <a class="sidebar__nav-link<?= $navActive === $__k ? ' active' : '' ?>" href="<?= htmlspecialchars($__item['href']) ?>" aria-current="<?= $navActive === $__k ? 'page' : 'false' ?>">
-            <span class="material-symbols-rounded" aria-hidden="true"><?= htmlspecialchars($__item['icon']) ?></span>
-            <?= htmlspecialchars($__item['label']) ?>
+        <div class="sidebar__group">Utama</div>
+        <a class="sidebar__nav-link<?= $navActive === 'dashboard' ? ' active' : '' ?>" href="dashboard.php" aria-current="<?= $navActive === 'dashboard' ? 'page' : 'false' ?>">
+            <span class="material-symbols-rounded" aria-hidden="true">home</span>
+            Dashboard
         </a>
-        <?php endforeach; ?>
+        <a class="sidebar__nav-link<?= $navActive === 'rekap_nomor' ? ' active' : '' ?>" href="rekap_nomor.php" aria-current="<?= $navActive === 'rekap_nomor' ? 'page' : 'false' ?>">
+            <span class="material-symbols-rounded" aria-hidden="true">format_list_numbered</span>
+            Rekap Nomor
+        </a>
+        <a class="sidebar__nav-link<?= $navActive === 'data_invoice' ? ' active' : '' ?>" href="data_invoice.php" aria-current="<?= $navActive === 'data_invoice' ? 'page' : 'false' ?>">
+            <span class="material-symbols-rounded" aria-hidden="true">receipt_long</span>
+            Data Invoice
+        </a>
+        <?php if ($__isAdmin): ?>
+        <div class="sidebar__group">Administrasi</div>
+        <a class="sidebar__nav-link<?= $navActive === 'manage_staff' ? ' active' : '' ?>" href="manage_staff.php" aria-current="<?= $navActive === 'manage_staff' ? 'page' : 'false' ?>">
+            <span class="material-symbols-rounded" aria-hidden="true">group</span>
+            Manajemen Staff
+        </a>
+        <?php endif; ?>
     </nav>
 
     <div class="sidebar__foot">
@@ -41,21 +45,11 @@ unset($_SESSION['akun_flash']);
             <?php else: ?>
                 <span class="sidebar__user-av"><?= htmlspecialchars(strtoupper(substr((string) $__sidebar['nama'], 0, 1))) ?></span>
             <?php endif; ?>
-            <span style="min-width:0">
+            <span style="min-width:0;display:flex;flex-direction:column">
                 <span class="sidebar__user-name"><?= htmlspecialchars($__sidebar['nama']) ?></span>
                 <span class="sidebar__user-role"><?= htmlspecialchars($__sidebar['jabatan']) ?></span>
             </span>
         </a>
-        <div class="sidebar__themes">
-            <span style="font-size:12.5px;font-weight:600;color:#CBD5E1">Tema</span>
-            <?php
-            $themeStored   = (string) ($__sidebar['theme'] ?? 'light');
-            $themeVariant  = 'icons';
-            $themeEndpoint = 'api/theme.php';
-            $themeCsrf     = csrf_token();
-            include __DIR__ . '/_theme_switch.php';
-            ?>
-        </div>
         <a class="sidebar__logout" href="staff.php?logout=1">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
             Keluar

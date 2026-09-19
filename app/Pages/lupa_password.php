@@ -52,7 +52,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <title>Lupa Password — AL MUTQON</title>
 <link rel="icon" href="assets/1.png">
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link href="assets/app.css?v=20260919c" rel="stylesheet">
+<link href="assets/app.css?v=20260919l" rel="stylesheet">
 </head>
 <body>
 <main class="page" style="max-width:440px; margin: 80px auto;">

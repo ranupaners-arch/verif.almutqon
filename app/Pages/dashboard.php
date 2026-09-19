@@ -199,12 +199,17 @@ $docs = $stmt->fetchAll();
 $buildQs = function (array $extra = []) use ($q, $statusF) {
     $arr = $extra;
     if ($q !== '') { $arr['q'] = $q; }
-    if ($statusF !== '') { $arr['status'] = $statusF; }
+    if (!isset($arr['status']) && $statusF !== '') { $arr['status'] = $statusF; }
     return http_build_query($arr);
 };
 
 $stmt = $pdo->query("SELECT MAX(CASE WHEN jenis = 'dokumen' THEN nomor_urut END) AS last_num, SUM(jenis = 'dokumen') AS total, SUM(jenis = 'invoice') AS invoice FROM dokumen"); 
 $stats = $stmt->fetch();
+
+// Jumlah dokumen yang dibuat oleh staff yang sedang login.
+$stmt = $pdo->prepare("SELECT COUNT(*) as cnt FROM dokumen WHERE staff_id = ? AND jenis = 'dokumen'");
+$stmt->execute([$staff_id]);
+$my_count = (int) ($stmt->fetch()['cnt'] ?? 0);
 
 // Shell variables
 $pageTitle = 'Dashboard';
@@ -212,15 +217,14 @@ $navActive = 'dashboard';
 $extraHead = '<script src="assets/vendor/qr-code-styling.js"></script>';
 ?>
 <!DOCTYPE html>
-<html lang="id" data-theme="<?= $akun['theme'] ?>">
+<html lang="id">
 <head>
-<script>try{if(document.documentElement.getAttribute('data-theme')==='system'){document.documentElement.setAttribute('data-theme',matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');}}catch(e){}</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Dashboard - AL MUTQON</title>
 <link rel="icon" href="assets/1.png">
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link href="assets/app.css?v=20260919c" rel="stylesheet">
+<link href="assets/app.css?v=20260919l" rel="stylesheet">
 <?= $extraHead ?>
 </head>
 <body>
@@ -230,23 +234,34 @@ $extraHead = '<script src="assets/vendor/qr-code-styling.js"></script>';
 
 <main class="page page--wide">
     <!-- STATS -->
-    <div class="grid4" style="margin-bottom:22px">
+    <div class="grid4" style="margin-bottom:24px">
         <div class="stat">
-            <p class="stat__label">Total Dokumen</p>
-            <p class="stat__value"><?= (int) ($stats['total'] ?? 0) ?></p>
-        </div>
-        <div class="stat stat--gold">
-            <p class="stat__label">Nomor Urut Terakhir</p>
-            <p class="stat__value">#<?= str_pad((string) ($stats['last_num'] ?? 0), 3, '0', STR_PAD_LEFT) ?></p>
-        </div>
-        <div class="stat">
-            <p class="stat__label">Invoice / Struk</p>
-            <p class="stat__value"><?= (int) ($stats['invoice'] ?? 0) ?></p>
+            <span class="stat__icon stat__icon--green material-symbols-rounded" aria-hidden="true">article</span>
+            <span class="stat__body">
+                <span class="stat__value"><?= (int) ($stats['total'] ?? 0) ?></span>
+                <span class="stat__label">Total Dokumen</span>
+            </span>
         </div>
         <div class="stat">
-            <p class="stat__label">Dibuat Oleh Anda</p>
-            <?php $stmt = $pdo->prepare("SELECT COUNT(*) as cnt FROM dokumen WHERE staff_id = ? AND jenis = 'dokumen'"); $stmt->execute([$staff_id]); $my_count = $stmt->fetch()['cnt']; ?>
-            <p class="stat__value"><?= $my_count ?></p>
+            <span class="stat__icon stat__icon--teal material-symbols-rounded" aria-hidden="true">format_list_numbered</span>
+            <span class="stat__body">
+                <span class="stat__value">#<?= str_pad((string) ($stats['last_num'] ?? 0), 3, '0', STR_PAD_LEFT) ?></span>
+                <span class="stat__label">Nomor Urut</span>
+            </span>
+        </div>
+        <div class="stat">
+            <span class="stat__icon stat__icon--amber material-symbols-rounded" aria-hidden="true">receipt_long</span>
+            <span class="stat__body">
+                <span class="stat__value"><?= (int) ($stats['invoice'] ?? 0) ?></span>
+                <span class="stat__label">Invoice / Struk</span>
+            </span>
+        </div>
+        <div class="stat">
+            <span class="stat__icon material-symbols-rounded" aria-hidden="true">person</span>
+            <span class="stat__body">
+                <span class="stat__value"><?= $my_count ?></span>
+                <span class="stat__label">Dokumen Anda</span>
+            </span>
         </div>
     </div>
 
@@ -349,7 +364,7 @@ $extraHead = '<script src="assets/vendor/qr-code-styling.js"></script>';
                 <div class="panel__bd">
                     <div class="row" style="justify-content:space-between;gap:10px;margin-bottom:14px;align-items:center">
                         <div class="filter-tabs" role="tablist" aria-label="Filter status dokumen">
-                            <a class="filter-tab<?= $statusF === '' ? ' active' : '' ?>" href="dashboard.php?<?= htmlspecialchars($buildQs()) ?>" role="tab" aria-selected="<?= $statusF === '' ? 'true' : 'false' ?>">Semua</a>
+                            <a class="filter-tab<?= $statusF === '' ? ' active' : '' ?>" href="dashboard.php?<?= htmlspecialchars(http_build_query($q !== '' ? ['q' => $q] : [])) ?>" role="tab" aria-selected="<?= $statusF === '' ? 'true' : 'false' ?>">Semua</a>
                             <a class="filter-tab<?= $statusF === 'active' ? ' active' : '' ?>" href="dashboard.php?<?= htmlspecialchars($buildQs(['status' => 'active'])) ?>" role="tab" aria-selected="<?= $statusF === 'active' ? 'true' : 'false' ?>">Aktif</a>
                             <a class="filter-tab<?= $statusF === 'revoked' ? ' active' : '' ?>" href="dashboard.php?<?= htmlspecialchars($buildQs(['status' => 'revoked'])) ?>" role="tab" aria-selected="<?= $statusF === 'revoked' ? 'true' : 'false' ?>">Dicabut</a>
                         </div>
