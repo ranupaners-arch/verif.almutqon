@@ -3,6 +3,21 @@ Entri terbaru di paling atas. Ditulis sesuai aturan adaCODE (perbaikan terverifi
 
 ---
 
+### Fix #4 — Pembersihan file sampah & penghapusan backdoor DEBUG auto-login
+Gejala: `public/__sesi.php` (auto-login `staff_id=2` tanpa password, DEBUG) masih di web root — lubang autentikasi; `public/api/theme.php` adalah tombstone yang selalu balas 410; `app/Support/migrate_theme_system.php` migrasi fitur tema yang sudah dihapus; folder `storage/uploads_legacy_t/` kosong (hanya `.gitkeep`).
+
+| Aspek | Rincian |
+|---|---|
+| Tanggal | 2026-09-22 |
+| File | Hapus: `public/__sesi.php`, `public/api/theme.php`, `app/Support/migrate_theme_system.php`, `storage/uploads_legacy_t/` (dir + `.gitkeep`) |
+| Masalah | Backdoor DEBUG aktif di web root (docs LAPORAN.md:158 berkali-kali meminta "segera hapus sebelum deploy"); endpoint tema 410 mati tanpa pemanggil; migrasi untuk fitur yang telah dihapus; folder arsip kosong |
+| Akar | `__sesi.php` sisa sesi debugging yang gagal dihapus pada pembersihan backdoor sebelumnya (CATATAN #94 hanya menghapus `_test_session.php`); fitur ganti tema dihapus tapi tombstone endpoint & migrasi dibiarkan |
+| Fix | Hapus keempat junk/backdoor; pertahankan `app/Support/migrate_avatar_theme.php` (bagian avatar masih dipakai — upload avatar aktif, skema `staff.avatar` ada; bagian theme-nya mati namun file satu-satunya rekam skema) |
+| Verifikasi | `php -l` 42 file PHP bersih; `grep api/theme|__sesi|uploads_legacy|migrate_theme_system` di `app/`+`public/` → 0 referensi tersisa; `storage/uploads/` tetap utuh |
+| Pelajaran | Pembersihan backdoor harus mencakup seluruh pola sesi debug (`_test_session.php` DAN `__sesi.php`); endpoint/migrasi untuk fitur yang dihapus jadi sampah dua-tahap — tombstone + migrator — buang keduanya sekaligus |
+| Log Keyword | `__sesi.php`, backdoor, auto-login, theme, 410, cleanup, migrate_theme |
+| Deploy | BELUM — perubahan lokal belum di-push; pastikan `__sesi.php` TIDAK ikut deploy ke live |
+
 ### Fix #3 — Akses "Aktif" ↔ "Dicabut" di filter Riwayat Dokumen gagal pindah status
 Gejala: klik "Dicabut" saat sedang di tab "Aktif" (dan sebaliknya) tidak mengubah daftar — tetap di status semula. "Semua"↔"Aktif" dan "Semua"↔"Dicabut" normal.
 
