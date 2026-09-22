@@ -103,10 +103,7 @@ $back_url = $is_staff_logged_in ? 'dashboard.php' : 'index.php';
                 </div>
             </div>
             <p id="scan-status" class="faint" style="font-size:13px;margin:14px 0">Kamera akan aktif otomatis saat tab Scan dibuka.</p>
-            <div id="scan-file-area" class="hidden" style="margin-top:6px">
-                <label class="dropzone" for="scan-file">Scan dari Gambar / Galeri</label>
-                <input type="file" id="scan-file" accept="image/*" capture="environment" class="hidden">
-            </div>
+            <input type="file" id="scan-file" accept="image/*" capture="environment" class="hidden">
         </section>
 
         <!-- PORTAL STAFF -->
@@ -247,8 +244,7 @@ function startScanner() {
     const frame = document.querySelector('.scan-frame');
     const empty = document.getElementById('scan-empty');
     if (!window.isSecureContext) {
-        document.getElementById('scan-file-area').classList.remove('hidden');
-        if (statusEl) statusEl.innerHTML = '<span class="warn-text">Kamera butuh HTTPS. Gunakan "Scan dari Gambar / Galeri", atau buka https://' + location.host + '</span>';
+        if (statusEl) statusEl.innerHTML = '<span class="warn-text">Kamera butuh HTTPS. Buka halaman ini via https://' + location.host + '</span>';
         return;
     }
     html5QrcodeScanner = new Html5QrcodeScanner("reader", { fps: 10, qrbox: { width: 250, height: 250 } }, false);
@@ -259,8 +255,7 @@ function startScanner() {
             if (statusEl) statusEl.textContent = 'Kamera aktif. Arahkan ke QR code...';
         })
         .catch(err => {
-            if (statusEl) statusEl.innerHTML = '<span class="warn-text">Tidak dapat mengakses kamera. Izinkan akses di browser, atau gunakan "Scan dari Gambar / Galeri".</span>';
-            document.getElementById('scan-file-area').classList.remove('hidden');
+            if (statusEl) statusEl.innerHTML = '<span class="warn-text">Tidak dapat mengakses kamera. Izinkan akses kamera di browser.</span>';
             console.error(err);
         });
 }
@@ -316,12 +311,6 @@ function onScanSuccess(decodedText) {
         if (this.files && this.files[0]) scanFromFile(this.files[0]);
         this.value = '';
     });
-
-    if (!window.isSecureContext) {
-        document.getElementById('scan-file-area').classList.remove('hidden');
-        const statusEl = document.getElementById('scan-status');
-        if (statusEl) statusEl.innerHTML = '<span class="warn-text">Kamera butuh HTTPS. Gunakan "Scan dari Gambar / Galeri", atau buka https://' + location.host + '</span>';
-    }
 })();
 </script>
 <?php endif; ?>
