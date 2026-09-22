@@ -59,7 +59,8 @@ $navActive = 'data_invoice';
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Data Invoice - AL MUTQON</title>
-<link rel="icon" href="assets/1.png">
+<link rel="icon" type="image/png" href="assets/favicon.png?v=20260919b">
+    <link rel="shortcut icon" href="assets/favicon.ico?v=20260919b">
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link href="assets/app.css?v=20260919l" rel="stylesheet">
 </head>

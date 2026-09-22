@@ -41,7 +41,8 @@ $back_url = $is_staff_logged_in ? 'dashboard.php' : 'index.php';
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>AL MUTQON - Validasi Dokumen Digital</title>
-<link rel="icon" href="assets/1.png">
+<link rel="icon" type="image/png" href="assets/favicon.png?v=20260919b">
+    <link rel="shortcut icon" href="assets/favicon.ico?v=20260919b">
 <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">

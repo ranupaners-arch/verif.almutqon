@@ -1,10 +1,10 @@
 # Catatan Lanjutan — AL MUTQON Verification System
-
+/
 Dokumen ini adalah handoff pekerjaan. Untuk melanjutkan, gunakan perintah: **`lanjut catatan.md`**.
 
 ## Kondisi saat ini
 
-- URL lokal Herd: `http://verif-almt.test`
+- URL lokal Herd: `http://verif.almutqon.test`
 - Web root yang dipakai: `public/`
 - Konfigurasi lokal ada di `.env` (diabaikan Git; jangan pernah membagikan atau mengomit isinya).
 - Database lokal: `db_almutqon-verif`.
@@ -61,7 +61,7 @@ storage/uploads/            # PDF terunggah
 25. **Data placeholder `penandatangan = "Direktur"` diperbaiki** — dokumen lama (id 1, 4, 5) yang menyimpan kata jabatan sebagai nama kini memakai nama direktur dari `staff.nama_lengkap`.
 26. **Redesign UI total (Tailwind CDN dihapus)** — kelima halaman (`index.php`, `staff.php`, `dashboard.php`, `manage_staff.php`, `change_password.php`) ditulis ulang memakai CSS kustom di `public/assets/app.css` dengan design tokens (`:root`: forest/gold/paper/ink/ok/err/warn), font **Lora** (serif, judul) + **Inter** (UI), struktur komponen: `.masthead`, `.tab-btn/.tab-active`, `.panel`, `.stat`, `.badge`, `.alert`, `.table`, `.doc`, `.verify-sheet`, `.modal-overlay`, `.kv`, `.dropzone`, `#strength-bar[data-lv]`, split login di `staff.php`, plus `@media print`. Seluruh ID/hook JavaScript lama dipertahankan (tidak ada JS/PHP logic yang berubah).
 27. **Beranda `index.php` — tata letak responsif baru** — State A kini `.beranda` dua kolom: pada layar ≥ 920 px brand + tagline ("Sistem Validasi Dokumen Digital" tetap satu kesatuan di header) dan footer **"Al-Mutqon Validation System - Secure HMAC-SHA256"** tampil di **sidebar kiri** yang sticky (brand di atas, footer di bawah sidebar); pada layar sempit brand di atas dan footer menjadi **fixed bottom bar** (footer selalu menempel di bawah). Tombol "Portal Staff" di header beranda dihapus (akses tetap lewat tab Portal Staff / `#staff`).
-28. **Scan QR berfungsi di HTTP (non-secure context)** — `index.php`: deteksi `!window.isSecureContext`, jika HTTP tombol kamera disembunyikan dan fallback **“Scan dari Gambar / Galeri”** (`#scan-file` + `scanFromFile()`) ditampilkan; pesan error menjelaskan perlunya HTTPS (`https://verif-almt.test` tersedia). Kamera tetap aktif bila halaman dibuka via HTTPS.
+28. **Scan QR berfungsi di HTTP (non-secure context)** — `index.php`: deteksi `!window.isSecureContext`, jika HTTP tombol kamera disembunyikan dan fallback **“Scan dari Gambar / Galeri”** (`#scan-file` + `scanFromFile()`) ditampilkan; pesan error menjelaskan perlunya HTTPS (`https://verif.almutqon.test` tersedia). Kamera tetap aktif bila halaman dibuka via HTTPS.
 29. **Tata letak dashboard responsif diperbaiki** — inline `grid-template-columns: 1fr 1.7fr` (yang menimpa media query mobile) diganti class `.dash-grid` (`public/assets/app.css`); `< 760px` riwayat dokumen otomatis menumpuk di bawah form “Buat Dokumen Baru”, dan `panel--sticky` dinonaktifkan di layar kecil.
 30. **Migrasi & kompatibilitas PDF lama** — helper `resolve_pdf_path()` di `app/Bootstrap.php` mencari PDF di `storage/uploads/` (skema baru) lalu lokasi legacy (`public/uploads/`, `public/`, `storage/`) dengan guard anti traversal; `app/Http/download_document.php` memakainya sebagai fallback. Script CLI `php app/Support/migrate_pdf_paths.php [--dry-run]` menyalin file legacy ke `storage/uploads/cert_*.pdf` dan mengoreksi `pdf_path`, plus melaporkan file yang tidak ditemukan.
 31. **Rate limit upload** — konstanta `UPLOAD_RATE_WINDOW_SECONDS` (600 dtk) & `MAX_UPLOAD_ATTEMPTS` (15) + helper `rate_limit_ok()` di `app/Bootstrap.php`; setiap POST `upload_pdf` dicatat `upload_attempt` dan bila melebihi 15×/10 mnt per IP ditolak; kegagalan upload dicatat `upload_failed` untuk audit.
@@ -88,7 +88,7 @@ storage/uploads/            # PDF terunggah
 52. **Ikon gaya referensi indowebsite (18 Sep)** — seluruh ikon menu profil + seg tema diganti path Lucide persis referensi (`fill=none`, `stroke-width=2`, round caps/joins, 16px): user, users, sun (r=5), moon, monitor, logout. Tanpa perubahan struktur/fungsi. Terverifikasi screenshot; akun uji bersih.
 
 53. **Pemadanan kontrol tema lintas proyek (18 Sep, cache-buster `v=20260918a`)** — satu partial tema 3-opsi (Terang/Gelap/Sistem) dipakai di:
-    - verif-almt: `_theme_switch.php` → `_account_menu.php` (variasi `--icons`) + `profil.php` (variasi `--big`);
+    - verif.almutqon: `_theme_switch.php` → `_account_menu.php` (variasi `--icons`) + `profil.php` (variasi `--big`);
     - almutqon: `layouts/theme-switch.php` → `pages/akun/pengaturan.php` (variasi `--big`).
     Markup, kelas CSS, perilaku JS (POST `api/theme.php`, sinkron 2 lokasi, listener `prefers-color-scheme`, `data-csrf`/`data-endpoint`) **100% identik** keduanya. Almutqon: ENUM `users.theme` ditambah `'system'` (`schema-theme.php`), `api/theme.php` terima `'system'`, `layouts/header.php` resolver sistem via script awal, `js/app.js` `initThemeSettings()` dihapus. Cache-buster dinaikkan ke `20260918a` (verif `assets/*`, almutqon `css/*`).
 54. **Pembersihan backdoor & duplikasi masthead (18 Sep)** — dihapus `app/Pages/_test_session.php` (backdoor set sesi direktur). Diekstrak `_masthead.php` (parameter `$pageTitle`, `$navLinks`, `$isAdminOrDirektur`) dan dipakai di 6 halaman (`dashboard.php`, `data_invoice.php`, `rekap_nomor.php`, `manage_staff.php`, `change_password.php`, `profil.php`), hapus logout duplikat di nav, `closeModal`/`window.onclick` dipindah ke `_modal_shared.php` (dedupe `_upload_modal.php` & `manage_staff.php`).
@@ -103,7 +103,7 @@ storage/uploads/            # PDF terunggah
 ## Pengujian yang sudah dilakukan
 
 - Semua file PHP lolos `php -l`.
-- `http://verif-almt.test/` memberi HTTP 200.
+- `http://verif.almutqon.test/` memberi HTTP 200.
 - Aset `assets/1.png` memberi HTTP 200.
 - Dashboard tanpa sesi mengarahkan ke login (HTTP 302).
 - Uji end-to-end (akun uji sementara, dibersihkan setelahnya):

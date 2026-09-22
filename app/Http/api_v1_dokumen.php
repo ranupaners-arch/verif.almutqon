@@ -4,7 +4,10 @@ declare(strict_types=1);
 // app/Http/api_v1_dokumen.php — API internal v1 untuk integrasi ALMUTQON.
 // Endpoint publik: POST /api/v1/dokumen.php (wrapper di public/api/v1/).
 // Auth: header `Authorization: Bearer <VERIF_API_TOKEN>` (.env, JAGA RAHASIA).
-// Aksi (field `action`): create | revoke | restore. Selalu JSON.
+// Aksi (field `action`): create | revoke | restore | replace_pdf. Selalu JSON.
+// - replace_pdf: ganti/unggah PDF dokumen (by `token` atau `no_surat`), PDF wajib
+//   via multipart field `pdf`. Dipakai almutqon untuk unggah struk BER-QR setelah
+//   dokumen dibuat (URL verifikasi baru diketahui pasca-create).
 //
 // - create: idempoten by no_surat (sudah ada → kembalikan baris lama + created:false).
 //   PDF opsional via multipart field `pdf` (aturan sama dengan dashboard:
@@ -22,8 +25,8 @@ $svcJabatan = (string) $svc['jabatan'];
 $input = api_input();
 
 $action = (string) ($input['action'] ?? '');
-if (!in_array($action, ['create', 'revoke', 'restore'], true)) {
-    api_respond(400, ['success' => false, 'message' => 'Aksi tidak dikenali (create|revoke|restore).']);
+if (!in_array($action, ['create', 'revoke', 'restore', 'replace_pdf'], true)) {
+    api_respond(400, ['success' => false, 'message' => 'Aksi tidak dikenali (create|revoke|restore|replace_pdf).']);
 }
 
 $ip = api_ip();
@@ -239,6 +242,59 @@ if ($tokenIn === '' && $noIn === '') {
 $doc = api_find_doc($pdo, $tokenIn, $noIn);
 if (!$doc) {
     api_respond(404, ['success' => false, 'message' => 'Dokumen tidak ditemukan.']);
+}
+
+// ------------------------------------------------------------- replace_pdf ---
+if ($action === 'replace_pdf') {
+    if (!isset($_FILES['pdf']) || (int) ($_FILES['pdf']['error'] ?? UPLOAD_ERR_NO_FILE) === UPLOAD_ERR_NO_FILE) {
+        api_respond(400, ['success' => false, 'message' => 'Field PDF wajib diisi.']);
+    }
+    $errCode = (int) $_FILES['pdf']['error'];
+    if ($errCode !== UPLOAD_ERR_OK) {
+        $msg = match ($errCode) {
+            UPLOAD_ERR_INI_SIZE, UPLOAD_ERR_FORM_SIZE => 'Ukuran PDF melebihi batas maksimal 10 MB.',
+            UPLOAD_ERR_PARTIAL => 'PDF hanya terkirim sebagian.',
+            default => 'Gagal menerima PDF.',
+        };
+        api_respond(400, ['success' => false, 'message' => $msg]);
+    }
+    if ((int) $_FILES['pdf']['size'] > MAX_UPLOAD_BYTES) {
+        api_respond(400, ['success' => false, 'message' => 'Ukuran PDF melebihi batas maksimal 10 MB.']);
+    }
+    $pdfTmp = (string) $_FILES['pdf']['tmp_name'];
+    $pdfExt = strtolower(pathinfo((string) $_FILES['pdf']['name'], PATHINFO_EXTENSION));
+    $pdfMime = (new finfo(FILEINFO_MIME_TYPE))->file($pdfTmp);
+    if ($pdfExt !== 'pdf' || $pdfMime !== 'application/pdf') {
+        api_respond(400, ['success' => false, 'message' => 'Format file harus PDF.']);
+    }
+
+    $pdfName = uniqid('cert_') . '.pdf';
+    $target = STORAGE_PATH . '/uploads/' . $pdfName;
+    if (!is_dir(STORAGE_PATH . '/uploads/') && !mkdir(STORAGE_PATH . '/uploads/', 0755, true)) {
+        api_respond(500, ['success' => false, 'message' => 'Gagal menyiapkan penyimpanan PDF.']);
+    }
+    if (!move_uploaded_file($pdfTmp, $target)) {
+        api_respond(500, ['success' => false, 'message' => 'Gagal menyimpan PDF.']);
+    }
+    try {
+        $pdo->prepare('UPDATE dokumen SET pdf_path = ? WHERE id = ?')->execute([$pdfName, (int) $doc['id']]);
+        $pdo->prepare("INSERT INTO activity_log (staff_id, action, dokumen_id, description, ip_address) VALUES (?, 'replace_pdf', ?, ?, ?)")
+            ->execute([$svcId, (int) $doc['id'], 'Mengganti PDF dokumen via API v1: ' . $doc['no_surat'], $ip]);
+    } catch (\Throwable $t) {
+        @unlink($target);
+        error_log('API v1 replace_pdf gagal: ' . $t->getMessage());
+        api_respond(500, ['success' => false, 'message' => 'Gagal memperbarui PDF dokumen.']);
+    }
+    // Berkas lama dihapus setelah DB sukses (kegagalan unlink tak fatal).
+    $oldPath = trim((string) ($doc['pdf_path'] ?? ''));
+    if ($oldPath !== '') {
+        $oldFile = STORAGE_PATH . '/uploads/' . basename($oldPath);
+        if (is_file($oldFile)) {
+            @unlink($oldFile);
+        }
+    }
+    $doc['pdf_path'] = $pdfName;
+    api_respond(200, ['success' => true, 'action' => 'replace_pdf', 'data' => api_doc_payload($doc)]);
 }
 
 $newStatus = $action === 'revoke' ? 'revoked' : 'active';
