@@ -6,6 +6,8 @@ $code  = $_GET['code']  ?? '';
 $dokumen = null;
 $is_valid = false;
 $error_msg = '';
+$staff_login_error = $_SESSION['staff_login_error'] ?? '';
+unset($_SESSION['staff_login_error']);
 
 if (!empty($token)) {
     $stmt = $pdo->prepare("SELECT * FROM dokumen WHERE token = ?");
@@ -47,7 +49,7 @@ $back_url = $is_staff_logged_in ? 'dashboard.php' : 'index.php';
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link href="assets/app.css?v=20260919l" rel="stylesheet">
-<link href="assets/portal.css?v=20260919c" rel="stylesheet">
+<link href="assets/portal.css?v=20260919d" rel="stylesheet">
 </head>
 <body>
 
@@ -113,6 +115,9 @@ $back_url = $is_staff_logged_in ? 'dashboard.php' : 'index.php';
             </div>
             <h2>Selamat Datang.</h2>
             <p>Login ke portal manajemen dan pengesahan dokumen.</p>
+            <?php if ($staff_login_error !== ''): ?>
+                <div class="alert alert-err" role="alert"><?= htmlspecialchars($staff_login_error) ?></div>
+            <?php endif; ?>
             <form method="POST" action="staff.php" class="stack">
                 <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(csrf_token(), ENT_QUOTES, 'UTF-8') ?>">
                 <div class="field">
@@ -122,6 +127,9 @@ $back_url = $is_staff_logged_in ? 'dashboard.php' : 'index.php';
                 <div class="field">
                     <label class="field__label" for="s-pass">Kata Sandi</label>
                     <input class="input" id="s-pass" type="password" name="password" placeholder="Masukkan kata sandi Anda" required>
+                    <?php if ($staff_login_error !== ''): ?>
+                        <p class="landing__recovery">Lupa kata sandi? <a href="lupa_password.php">Pulihkan akses</a></p>
+                    <?php endif; ?>
                 </div>
                 <button type="submit" class="btn btn-primary btn-block">Masuk ke Sistem</button>
             </form>

@@ -189,6 +189,8 @@ body:has(.beranda) { background: var(--paper); }
 .landing__panel--staff { text-align: left; }
 .landing__panel--staff > p { max-width: 420px; }
 .landing__panel--staff .stack { margin-top: 4px; }
+.landing__recovery { margin: 0; font-size: 13px; color: var(--pv-muted); }
+.landing__recovery a { color: var(--pv-navy); font-weight: 700; }
 
 /* ---------- Hasil verifikasi (State B / C) ---------- */
 .verify-wrap { background: var(--paper); }
