@@ -48,8 +48,8 @@ $back_url = $is_staff_logged_in ? 'dashboard.php' : 'index.php';
 <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link href="assets/app.css?v=20260919l" rel="stylesheet">
-<link href="assets/portal.css?v=20260919d" rel="stylesheet">
+<link href="assets/app.css?v=20260926h" rel="stylesheet">
+<link href="assets/portal.css?v=20260925i" rel="stylesheet">
 </head>
 <body>
 
@@ -323,5 +323,6 @@ function onScanSuccess(decodedText) {
 })();
 </script>
 <?php endif; ?>
+<script src="assets/nav.js?v=20260926b"></script>
 </body>
 </html>

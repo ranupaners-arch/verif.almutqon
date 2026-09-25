@@ -3,6 +3,21 @@ Entri terbaru di paling atas. Ditulis sesuai aturan adaCODE (perbaikan terverifi
 
 ---
 
+### Fix #8: QR unduhan Almutqon: modul hitam, logo proporsional, dan mudah dipindai
+Gejala: QR yang diunduh dari Dashboard memakai modul hijau dan titik sudut amber, logo Almutqon terlalu besar di tengah, dan hasil visual kurang presisi.
+
+| Aspek | Rincian |
+|---|---|
+| Tanggal | 2026-09-25 |
+| File | `app/Pages/dashboard.php:418-442` |
+| Masalah | Opsi styling memakai warna `#166534` dan `#F59E0B`, `imageSize: 0.5`, serta tidak mengatur koreksi error atau quiet zone tambahan |
+| Akar | Konfigurasi preview dan download terlalu agresif untuk logo square di tengah QR, sehingga area logo menutup terlalu banyak modul dan paket unduhan tidak punya margin putih yang cukup |
+| Fix | Semua modul, corner square, dan corner dot menjadi `#000000`; logo `imageSize: 0.24`; tambah margin 8 px untuk preview dan 32 px untuk PNG 1000×1000; koreksi error `H` |
+| Verifikasi | `php -l app/Pages/dashboard.php` dan `node --check` blok JS lulus; browser merender preview SVG 220×220 dengan logo 37×37 px; PNG unduhan 1000×1000 (83.533 byte) berhasil dibuat; warna SVG hanya `#ffffff` dan `#000000`, 0 piksel berwarna di luar area logo; `jsQR` berhasil membaca `https://example.test/index.php?token=test`; event download selesai tanpa failure; console error 0 |
+| Pelajaran | Logo branded perlu dibatasi sekitar seperempat area QR, dikelilingi quiet zone, dan dikombinasikan dengan koreksi error tinggi agar hasil tetap rapi sekaligus mudah dipindai |
+| Log Keyword | QR unduhan, QR hitam, logo Almutqon, imageSize, errorCorrectionLevel, quiet zone, QRCodeStyling |
+| Deploy | BELUM - perubahan lokal belum dipush |
+
 ### Fix #7 — QR Code dokumen baru tidak muncul & tombol "Download QR (HD PNG)" mati di Dashboard
 Gejala: setelah membuat dokumen baru di Dashboard, panel "QR Code Verifikasi" kosong (tidak ada QR tampil) dan klik "Download QR (HD PNG)" tidak melakukan apa pun (console: `Uncaught SyntaxError: Unexpected token ')'` → `downloadQR is not defined`).
 

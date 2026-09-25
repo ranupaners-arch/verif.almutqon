@@ -13,14 +13,13 @@ declare(strict_types=1);
 //   PDF opsional via multipart field `pdf` (aturan sama dengan dashboard:
 //   .pdf + application/pdf + ≤ MAX_UPLOAD_BYTES, nama acak cert_*.pdf).
 // - revoke/restore: cari by `token` (64 hex) atau `no_surat`; catat activity_log.
-// Akun pencatat = service-account VERIF_API_STAFF_NIP (FK staff tetap bersih).
+// Pencatat = system actor ALMUTQON Bridge, terpisah dari akun manusia.
 
 require __DIR__ . '/api_v1_boot.php';
 
 $svc = api_service_account($pdo);
 $svcId = (int) $svc['id'];
-$svcNama = (string) $svc['nama_lengkap'];
-$svcJabatan = (string) $svc['jabatan'];
+$svcNama = (string) $svc['display_name'];
 
 $input = api_input();
 
@@ -81,19 +80,28 @@ if ($action === 'create') {
     if ($penandatangan === '') {
         $penandatangan = $svcNama;
     }
-    if ($jabatanTtd === '') {
-        $jabatanTtd = $svcJabatan;
-    }
 
     $tanggalOk = false;
     if (preg_match('/^(\d{4})-(\d{2})-(\d{2})$/', $tanggal, $tp)) {
         $tanggalOk = checkdate((int) $tp[2], (int) $tp[3], (int) $tp[1]);
     }
 
-    // Validasi sama dengan form dashboard (batas 255 + tanggal kalender valid).
+    // Nomor wajib valid sebelum pencarian idempoten.
     if ($noSurat === '' || strlen($noSurat) > 255) {
         api_respond(400, ['success' => false, 'message' => 'Nomor surat wajib diisi (maksimal 255 karakter).']);
-    } elseif ($perihal === '' || strlen($perihal) > 255) {
+    }
+
+    // Retry hanya perlu nomor dokumen; data lama tetap menjadi sumber kebenaran.
+    $existing = api_find_doc($pdo, '', $noSurat);
+    if ($existing) {
+        api_respond(200, [
+            'success' => true, 'action' => 'create', 'created' => false,
+            'data' => api_doc_payload($existing),
+        ]);
+    }
+
+    // Validasi sama dengan form dashboard (batas 255 + tanggal kalender valid).
+    if ($perihal === '' || strlen($perihal) > 255) {
         api_respond(400, ['success' => false, 'message' => 'Perihal wajib diisi (maksimal 255 karakter).']);
     } elseif ($penerima === '' || strlen($penerima) > 255) {
         api_respond(400, ['success' => false, 'message' => 'Penerima wajib diisi (maksimal 255 karakter).']);
@@ -103,15 +111,6 @@ if ($action === 'create') {
         api_respond(400, ['success' => false, 'message' => 'Jabatan penandatangan wajib diisi (maksimal 255 karakter).']);
     } elseif (strlen($penandatangan) > 255) {
         api_respond(400, ['success' => false, 'message' => 'Nama penandatangan maksimal 255 karakter.']);
-    }
-
-    // Idempoten: no_surat sudah terdaftar → kembalikan baris lama (retry aman).
-    $existing = api_find_doc($pdo, '', $noSurat);
-    if ($existing) {
-        api_respond(200, [
-            'success' => true, 'action' => 'create', 'created' => false,
-            'data' => api_doc_payload($existing),
-        ]);
     }
 
     // PDF opsional: validasi dulu SEBELUM insert agar gagal-cepat tanpa baris yatim.
@@ -166,7 +165,7 @@ if ($action === 'create') {
         for ($i = 0; $i < 5; $i++) {
             $code = strtoupper(substr(bin2hex(random_bytes(3)), 0, 6));
             try {
-                $stmt = $pdo->prepare("INSERT INTO dokumen (token, code_6digit, nomor_urut, jenis, no_surat, perihal, penerima, tanggal_dokumen, penandatangan, jabatan, staff_id, status, pdf_path) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'active', NULL)");
+                $stmt = $pdo->prepare("INSERT INTO dokumen (token, code_6digit, nomor_urut, jenis, no_surat, perihal, penerima, tanggal_dokumen, penandatangan, jabatan, staff_id, system_actor_id, status, pdf_path) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NULL, ?, 'active', NULL)");
                 $stmt->execute([$token, $code, $nomorUrut, $jenis, $noSurat, $perihal, $penerima, $tanggal, $penandatangan, $jabatanTtd, $svcId]);
                 $docId = (int) $pdo->lastInsertId();
                 break;
@@ -207,7 +206,7 @@ if ($action === 'create') {
             $stmt->execute([$pdfName, $docId]);
         }
 
-        $pdo->prepare("INSERT INTO activity_log (staff_id, action, dokumen_id, description, ip_address) VALUES (?, 'create_doc', ?, ?, ?)")
+        $pdo->prepare("INSERT INTO activity_log (staff_id, system_actor_id, action, dokumen_id, description, ip_address) VALUES (NULL, ?, 'create_doc', ?, ?, ?)")
             ->execute([$svcId, $docId, 'Membuat dokumen via API v1: ' . $noSurat, $ip]);
 
         $pdo->commit();
@@ -278,7 +277,7 @@ if ($action === 'replace_pdf') {
     }
     try {
         $pdo->prepare('UPDATE dokumen SET pdf_path = ? WHERE id = ?')->execute([$pdfName, (int) $doc['id']]);
-        $pdo->prepare("INSERT INTO activity_log (staff_id, action, dokumen_id, description, ip_address) VALUES (?, 'replace_pdf', ?, ?, ?)")
+        $pdo->prepare("INSERT INTO activity_log (staff_id, system_actor_id, action, dokumen_id, description, ip_address) VALUES (NULL, ?, 'replace_pdf', ?, ?, ?)")
             ->execute([$svcId, (int) $doc['id'], 'Mengganti PDF dokumen via API v1: ' . $doc['no_surat'], $ip]);
     } catch (\Throwable $t) {
         @unlink($target);
@@ -300,7 +299,7 @@ if ($action === 'replace_pdf') {
 $newStatus = $action === 'revoke' ? 'revoked' : 'active';
 try {
     $pdo->prepare('UPDATE dokumen SET status = ? WHERE id = ?')->execute([$newStatus, (int) $doc['id']]);
-    $pdo->prepare('INSERT INTO activity_log (staff_id, action, dokumen_id, description, ip_address) VALUES (?, ?, ?, ?, ?)')
+    $pdo->prepare('INSERT INTO activity_log (staff_id, system_actor_id, action, dokumen_id, description, ip_address) VALUES (NULL, ?, ?, ?, ?, ?)')
         ->execute([$svcId, $newStatus === 'revoked' ? 'revoke_document' : 'restore_document', (int) $doc['id'], ($newStatus === 'revoked' ? 'Mencabut' : 'Mengaktifkan kembali') . ' dokumen via API v1: ' . $doc['no_surat'], $ip]);
     $doc['status'] = $newStatus;
     api_respond(200, ['success' => true, 'action' => $action, 'data' => api_doc_payload($doc)]);

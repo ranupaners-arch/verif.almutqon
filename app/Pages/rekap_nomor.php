@@ -51,8 +51,8 @@ $navActive = 'rekap_nomor';
 <title>Rekap Nomor - AL MUTQON</title>
 <link rel="icon" type="image/png" href="assets/favicon.png?v=20260919b">
     <link rel="shortcut icon" href="assets/favicon.ico?v=20260919b">
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link href="assets/app.css?v=20260919l" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="assets/app.css?v=20260926g" rel="stylesheet">
 </head>
 <body>
 
@@ -135,6 +135,6 @@ $navActive = 'rekap_nomor';
     </div>
 </main>
 
-<script src="assets/nav.js?v=20260919c"></script>
+<script src="assets/nav.js?v=20260926a"></script>
 </body>
 </html>

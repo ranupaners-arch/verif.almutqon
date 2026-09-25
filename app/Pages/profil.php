@@ -19,6 +19,55 @@ $stmt->execute([$staff_id]);
 $lastPw = $stmt->fetchColumn();
 $lastPwText = $lastPw ? date('d M Y H:i', strtotime((string) $lastPw)) : 'Belum pernah';
 
+$msg = ''; $msg_type = '';
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && !verify_csrf()) {
+    $msg = 'Permintaan tidak valid. Silakan muat ulang halaman dan coba lagi.'; $msg_type = 'error';
+} elseif ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $aksi = (string) ($_POST['aksi'] ?? '');
+    if ($aksi === 'simpan_nama') {
+        $nama = trim((string) ($_POST['nama_lengkap'] ?? ''));
+        if ($nama === '' || mb_strlen($nama) > 255) {
+            $msg = 'Nama lengkap wajib diisi dan maksimal 255 karakter.'; $msg_type = 'error';
+        } else {
+            $pdo->prepare('UPDATE staff SET nama_lengkap = ? WHERE id = ?')->execute([$nama, $staff_id]);
+            $pdo->prepare("INSERT INTO activity_log (staff_id, action, description, ip_address) VALUES (?, 'change_name', 'Mengubah nama sendiri', ?)")
+                ->execute([$staff_id, $_SERVER['REMOTE_ADDR']]);
+            $akun['nama'] = $nama;
+            $_SESSION['staff_nama'] = $nama;
+            $msg = 'Nama profil berhasil diperbarui.'; $msg_type = 'success';
+        }
+    } elseif ($aksi === 'simpan_email') {
+        $email_baru = trim((string) ($_POST['email_baru'] ?? ''));
+        $pass_lama = (string) ($_POST['password_lama'] ?? '');
+        if (!filter_var($email_baru, FILTER_VALIDATE_EMAIL) || mb_strlen($email_baru) > 255) {
+            $msg = 'Format email tidak valid.'; $msg_type = 'error';
+        } elseif ($pass_lama === '') {
+            $msg = 'Password saat ini wajib diisi.'; $msg_type = 'error';
+        } else {
+            $stmt = $pdo->prepare('SELECT email, password FROM staff WHERE id = ?');
+            $stmt->execute([$staff_id]);
+            $row = $stmt->fetch();
+            if (!$row || !password_verify($pass_lama, $row['password'])) {
+                $msg = 'Password saat ini salah. Silakan coba lagi.'; $msg_type = 'error';
+            } else {
+                $dup = $pdo->prepare('SELECT id FROM staff WHERE email = ? AND id != ?');
+                $dup->execute([$email_baru, $staff_id]);
+                if ($dup->fetch()) {
+                    $msg = 'Email sudah digunakan staff lain.'; $msg_type = 'error';
+                } else {
+                    $pdo->prepare('UPDATE staff SET email = ? WHERE id = ?')->execute([$email_baru, $staff_id]);
+                    $pdo->prepare("INSERT INTO activity_log (staff_id, action, description, ip_address) VALUES (?, 'change_email', 'Mengubah email sendiri', ?)")
+                        ->execute([$staff_id, $_SERVER['REMOTE_ADDR']]);
+                    $akun['email'] = $email_baru;
+                    $msg = 'Email berhasil diperbarui.'; $msg_type = 'success';
+                }
+            }
+        }
+    } else {
+        $msg = 'Permintaan tidak dikenali.'; $msg_type = 'error';
+    }
+}
+
 $pageTitle = 'Profil Saya';
 $navActive = 'profil';
 ?>
@@ -30,90 +79,98 @@ $navActive = 'profil';
 <title>Profil Saya - AL MUTQON</title>
 <link rel="icon" type="image/png" href="assets/favicon.png?v=20260919b">
     <link rel="shortcut icon" href="assets/favicon.ico?v=20260919b">
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link href="assets/app.css?v=20260919l" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="assets/app.css?v=20260926g" rel="stylesheet">
 </head>
-<body>
+<body class="profile-page">
 
 <?php include __DIR__ . '/_sidebar.php'; ?>
 <?php include __DIR__ . '/_masthead.php'; ?>
 
-<main class="page" style="max-width:640px">
-    <div class="panel" style="margin-bottom:16px">
-        <div class="panel__hd">
-            <h2 class="panel__title">Profil</h2>
+<div style="max-width:680px;margin:0 auto;width:100%;display:flex;flex-direction:column;justify-content:center;min-height:calc(100vh - 180px);padding:28px 0 56px;">
+    <?php if ($msg): ?>
+    <div class="alert <?= $msg_type === 'success' ? 'alert-ok' : 'alert-err' ?>" style="margin-bottom:24px">
+        <span><?= htmlspecialchars($msg) ?></span>
+    </div>
+    <?php endif; ?>
+
+    <section class="profile-card">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:20px;">
+            <div>
+                <div class="profile-card__title">Profil</div>
+                <p class="profile-card__sub">Foto dan nama untuk akun dashboard Anda.</p>
+            </div>
             <span class="badge <?= $roleBadge ?>"><?= htmlspecialchars($roleLabel) ?></span>
         </div>
-        <div class="panel__bd">
-            <div class="row" style="align-items:center;margin-bottom:18px">
-                <span id="avatar-now">
-                    <?php if ($akun['avatar'] !== ''): ?>
-                        <img src="<?= htmlspecialchars($akun['avatar']) ?>" alt="Avatar" style="width:72px;height:72px;border-radius:50%;object-fit:cover;flex-shrink:0">
-                    <?php else: ?>
-                        <span class="account-menu__avatar" style="width:72px;height:72px;font-size:30px;"><?= htmlspecialchars(strtoupper(substr($akun['nama'], 0, 1))) ?></span>
-                    <?php endif; ?>
-                </span>
-                <div style="min-width:0">
-                    <p style="font-weight:700;font-size:17px;margin:0"><?= htmlspecialchars($akun['nama']) ?></p>
-                    <p class="faint" style="font-size:13px;margin:2px 0 0"><?= htmlspecialchars($akun['jabatan']) ?> &bull; <?= htmlspecialchars($roleLabel) ?></p>
-                </div>
-            </div>
-            <form method="POST" action="api/avatar.php" enctype="multipart/form-data" class="stack">
-                <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(csrf_token(), ENT_QUOTES, 'UTF-8') ?>">
-                <input type="hidden" name="aksi" value="simpan">
-                <input type="hidden" name="kembali" value="profil.php">
-                <div class="field">
-                    <label class="field__label" for="avatar-file-profil">Ganti Avatar (JPG/PNG/WebP, maks 1 MB)</label>
-                    <div class="row" style="gap:10px;align-items:center">
-                        <input class="input" id="avatar-file-profil" type="file" name="avatar" accept=".jpg,.jpeg,.png,.webp" required style="flex:1">
-                        <img id="avatar-preview" alt="Pratinjau" class="hidden" style="width:44px;height:44px;border-radius:50%;object-fit:cover;flex-shrink:0">
-                    </div>
-                </div>
-                <div class="row">
-                    <button type="submit" class="btn btn-primary">Simpan Avatar</button>
-                    <?php if ($akun['avatar'] !== ''): ?>
-                    <button type="submit" class="btn btn-light" formaction="api/avatar.php" formnovalidate onclick="this.form.aksi.value='hapus'">Hapus Avatar</button>
-                    <?php endif; ?>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <div class="panel" style="margin-bottom:16px">
-        <div class="panel__hd">
-            <h2 class="panel__title">Info Akun</h2>
-        </div>
-        <div class="panel__bd">
-            <div class="doc-grid">
-                <div class="doc-cell">
-                    <p class="doc-cell__label">ID Pengguna / NIP</p>
-                    <p class="doc-cell__value mono"><?= htmlspecialchars($akun['nip']) ?></p>
-                </div>
-                <div class="doc-cell">
-                    <p class="doc-cell__label">Email</p>
-                    <p class="doc-cell__value" style="font-size:14px"><?= htmlspecialchars($akun['email']) ?></p>
-                </div>
+        <div style="display:flex;align-items:center;gap:16px;margin-bottom:20px;">
+            <span style="width:72px;height:72px;border-radius:50%;overflow:hidden;flex:none;display:inline-flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#166534,#14532D);color:#fff;font-size:28px;font-weight:800;">
+                <?php if ($akun['avatar'] !== ''): ?>
+                    <img src="<?= htmlspecialchars($akun['avatar']) ?>" alt="Avatar" style="width:100%;height:100%;object-fit:cover;">
+                <?php else: ?>
+                    <?= htmlspecialchars(mb_strtoupper(mb_substr($akun['nama'], 0, 1))) ?>
+                <?php endif; ?>
+            </span>
+            <div>
+                <strong style="font-size:17px;"><?= htmlspecialchars($akun['nama']) ?></strong>
+                <p class="profile-card__sub" style="margin:3px 0 0;"><?= htmlspecialchars($akun['jabatan']) ?> &bull; <?= htmlspecialchars($roleLabel) ?></p>
             </div>
         </div>
-    </div>
 
-    <div class="panel" style="margin-bottom:16px">
-        <div class="panel__hd">
-            <h2 class="panel__title">Keamanan</h2>
-        </div>
-        <div class="panel__bd">
-            <div class="kv" style="margin-bottom:14px">
-                <p class="kv__label">Terakhir Ganti Password</p>
-                <p class="doc-cell__value" style="font-weight:600;font-size:14.5px"><?= htmlspecialchars($lastPwText) ?></p>
+        <form method="POST" action="api/avatar.php" enctype="multipart/form-data" class="row" style="gap:12px;align-items:flex-start;flex-wrap:wrap">
+            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(csrf_token(), ENT_QUOTES, 'UTF-8') ?>">
+            <input type="hidden" name="aksi" value="simpan">
+            <input type="hidden" name="kembali" value="profil.php">
+            <div style="flex:1;min-width:220px;">
+                <label class="field__label" for="avatar-file-profil">Ganti Avatar</label>
+                <input class="input" id="avatar-file-profil" type="file" name="avatar" accept=".jpg,.jpeg,.png,.webp" required>
+                <p class="faint" style="font-size:12px;margin-top:6px">JPG, PNG, atau WebP, maksimal 1 MB.</p>
             </div>
-            <a class="btn btn-primary btn-block" href="change_password.php">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-                Ganti Password
-            </a>
-        </div>
-    </div>
+            <button type="submit" class="btn btn-primary" style="flex:0 0 auto;flex-shrink:0;width:fit-content;min-width:0;white-space:nowrap;position:relative;top:30px;">Simpan Avatar</button>
+        </form>
 
-</main>
+        <form method="POST" class="row" style="gap:12px;align-items:end;flex-wrap:wrap;margin-top:20px">
+            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(csrf_token(), ENT_QUOTES, 'UTF-8') ?>">
+            <input type="hidden" name="aksi" value="simpan_nama">
+            <div style="flex:1;min-width:220px;">
+                <label class="field__label" for="nama-lengkap">Nama Lengkap</label>
+                <input class="input" id="nama-lengkap" type="text" name="nama_lengkap" value="<?= htmlspecialchars($akun['nama']) ?>" maxlength="255" required>
+            </div>
+            <button type="submit" class="btn btn-primary" style="flex-shrink:0">Simpan Nama</button>
+        </form>
+    </section>
+
+    <section class="profile-card">
+        <div class="profile-card__title" style="margin-bottom:16px;">Info Akun</div>
+        <div class="profile-card__table">
+            <div class="profile-card__row"><span>ID Pengguna / NIP</span><code><?= htmlspecialchars($akun['nip']) ?></code></div>
+            <div class="profile-card__row"><span>Email</span><span><?= htmlspecialchars($akun['email']) ?></span></div>
+        </div>
+        <button type="button" id="btn-ganti-email" class="btn btn-light" style="margin-top:20px;">Ganti Email</button>
+        <form method="POST" id="form-ganti-email" style="margin-top:20px;display:none;">
+            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(csrf_token(), ENT_QUOTES, 'UTF-8') ?>">
+            <input type="hidden" name="aksi" value="simpan_email">
+            <div style="margin-bottom:16px;">
+                <label class="field__label" for="email-baru">Email Baru</label>
+                <input class="input" id="email-baru" type="email" name="email_baru" value="<?= htmlspecialchars($akun['email']) ?>" maxlength="255" required>
+                <p class="faint" style="font-size:12px;margin-top:6px">Email dipakai untuk login dashboard dan harus unik.</p>
+            </div>
+            <div style="margin-bottom:16px;">
+                <label class="field__label" for="pass-lama-email">Password Saat Ini</label>
+                <input class="input" type="password" name="password_lama" id="pass-lama-email" required placeholder="Masukkan password saat ini">
+            </div>
+            <div style="display:flex;gap:10px;align-items:center;">
+                <button type="submit" class="btn btn-primary">Simpan Email</button>
+                <button type="button" id="btn-batal-email" class="btn btn-light">Batal</button>
+            </div>
+        </form>
+    </section>
+
+    <section class="profile-card">
+        <div class="profile-card__title" style="margin-bottom:16px;">Keamanan</div>
+        <p class="profile-card__sub" style="margin:0 0 16px;">Gunakan password yang kuat dan jangan bagikan kepada orang lain.</p>
+        <a class="btn btn-primary btn-block" href="change_password.php">Ganti Password</a>
+    </section>
+</div>
 
 <script>
 document.getElementById('avatar-file-profil').addEventListener('change', function () {
@@ -128,7 +185,23 @@ document.getElementById('avatar-file-profil').addEventListener('change', functio
         reader.readAsDataURL(file);
     }
 });
+(function () {
+    var btn = document.getElementById('btn-ganti-email');
+    var form = document.getElementById('form-ganti-email');
+    var btl = document.getElementById('btn-batal-email');
+    if (!btn || !form) return;
+    btn.addEventListener('click', function () {
+        btn.style.display = 'none';
+        form.style.display = 'block';
+        var pass = document.getElementById('pass-lama-email');
+        if (pass) pass.focus();
+    });
+    btl.addEventListener('click', function () {
+        form.style.display = 'none';
+        btn.style.display = 'inline-flex';
+    });
+})();
 </script>
-<script src="assets/nav.js?v=20260919c"></script>
+<script src="assets/nav.js?v=20260926a"></script>
 </body>
 </html>

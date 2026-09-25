@@ -236,15 +236,15 @@ $navActive = 'manage_staff';
 <title>Manajemen Staff - AL MUTQON</title>
 <link rel="icon" type="image/png" href="assets/favicon.png?v=20260919b">
     <link rel="shortcut icon" href="assets/favicon.ico?v=20260919b">
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link href="assets/app.css?v=20260919l" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="assets/app.css?v=20260926g" rel="stylesheet">
 </head>
 <body>
 
 <?php include __DIR__ . '/_sidebar.php'; ?>
 <?php include __DIR__ . '/_masthead.php'; ?>
 
-<main class="page page--wide">
+<main class="page page--wide staff-management">
     <?php if ($msg): ?>
     <div class="alert <?= $msg_type === 'success' ? 'alert-ok' : 'alert-err' ?>">
         <span><?= htmlspecialchars($msg) ?></span>
@@ -252,34 +252,37 @@ $navActive = 'manage_staff';
     <?php endif; ?>
 
     <?php if ($is_admin_or_direktur): ?>
-    <div class="panel" style="margin-bottom:22px">
+    <section class="panel staff-create-panel">
         <div class="panel__hd">
-            <h2 class="panel__title">Tambah Staff Baru</h2>
+            <div>
+                <h2 class="panel__title">Tambah Staff Baru</h2>
+                <p class="staff-create-panel__desc">Buat akun akses untuk pengelolaan dokumen Al Mutqon.</p>
+            </div>
             <?php if (!$is_direktur): ?><span class="badge badge-warn">Sebagai Admin, Anda tidak dapat membuat akun dengan role Direktur</span><?php endif; ?>
         </div>
         <div class="panel__bd">
-            <form method="POST" class="grid2">
+            <form method="POST" class="staff-form">
                 <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(csrf_token(), ENT_QUOTES, 'UTF-8') ?>">
                 <input type="hidden" name="action" value="add">
                 <div class="field">
-                    <label class="field__label">NIP / ID Pengguna</label>
-                    <input class="input" type="text" name="nip" required placeholder="Nomor Induk Pegawai">
+                    <label class="field__label" for="staff-nip">NIP / ID Pengguna</label>
+                    <input class="input" id="staff-nip" type="text" name="nip" required placeholder="Nomor Induk Pegawai">
                 </div>
                 <div class="field">
-                    <label class="field__label">Nama Lengkap</label>
-                    <input class="input" type="text" name="nama_lengkap" required>
+                    <label class="field__label" for="staff-nama">Nama Lengkap</label>
+                    <input class="input" id="staff-nama" type="text" name="nama_lengkap" required autocomplete="name">
                 </div>
                 <div class="field">
-                    <label class="field__label">Jabatan</label>
-                    <input class="input" type="text" name="jabatan" required>
+                    <label class="field__label" for="staff-jabatan">Jabatan</label>
+                    <input class="input" id="staff-jabatan" type="text" name="jabatan" required>
                 </div>
                 <div class="field">
-                    <label class="field__label">Email</label>
-                    <input class="input" type="email" name="email" required>
+                    <label class="field__label" for="staff-email">Email</label>
+                    <input class="input" id="staff-email" type="email" name="email" required autocomplete="email">
                 </div>
                 <div class="field">
-                    <label class="field__label">Role</label>
-                    <select class="select" name="role" required>
+                    <label class="field__label" for="staff-role">Role</label>
+                    <select class="select" id="staff-role" name="role" required>
                         <option value="staff">Staff</option>
                         <option value="admin">Admin</option>
                         <?php if ($is_direktur): ?><option value="direktur">Direktur</option><?php endif; ?>
@@ -287,18 +290,18 @@ $navActive = 'manage_staff';
                     <?php if (!$is_direktur): ?><span class="faint" style="font-size:12px">*Hanya Direktur yang dapat membuat role Direktur.</span><?php endif; ?>
                 </div>
                 <div class="field">
-                    <label class="field__label">Password Awal</label>
-                    <input class="input" type="password" name="password" required minlength="8" placeholder="Min. 8 karakter (huruf &amp; angka)">
+                    <label class="field__label" for="staff-password">Password Awal</label>
+                    <input class="input" id="staff-password" type="password" name="password" required minlength="8" placeholder="Min. 8 karakter (huruf &amp; angka)" autocomplete="new-password">
                 </div>
-                <div style="grid-column:1 / -1">
+                <div class="staff-form__actions">
                     <button class="btn btn-primary" type="submit">Tambahkan Staff</button>
                 </div>
             </form>
         </div>
-    </div>
+    </section>
     <?php endif; ?>
 
-    <div class="panel">
+    <section class="panel staff-directory">
         <div class="panel__hd">
             <h2 class="panel__title">Daftar Staff &amp; Hak Akses</h2>
             <span class="badge badge-forest"><?= count($staff_list) ?> akun</span>
@@ -361,7 +364,7 @@ $navActive = 'manage_staff';
                 </table>
             </div>
         </div>
-    </div>
+    </section>
 </main>
 
 <!-- MODAL EDIT -->
@@ -440,6 +443,6 @@ function openResetModal(id, nama) {
     openModal('modal-reset');
 }
 </script>
-<script src="assets/nav.js?v=20260919c"></script>
+<script src="assets/nav.js?v=20260926a"></script>
 </body>
 </html>

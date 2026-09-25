@@ -49,7 +49,7 @@ if ($token === '') {
 <link rel="icon" type="image/png" href="assets/favicon.png?v=20260919b">
     <link rel="shortcut icon" href="assets/favicon.ico?v=20260919b">
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link href="assets/app.css?v=20260919l" rel="stylesheet">
+<link href="assets/app.css?v=20260926f" rel="stylesheet">
 </head>
 <body>
 <main class="page" style="max-width:440px; margin: 80px auto;">
@@ -97,5 +97,6 @@ if ($token === '') {
         </div>
     </div>
 </main>
+<script src="assets/nav.js?v=20260926a"></script>
 </body>
 </html>

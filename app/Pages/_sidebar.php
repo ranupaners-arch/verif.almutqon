@@ -1,7 +1,7 @@
 <?php
 // app/Pages/_sidebar.php — off-canvas left drawer: navigasi utama halaman staff.
 // Variabel tersedia sebelum include: $pdo, $staff_id, $akun (akun_ringkas()).
-// Opsional: $isAdminOrDirektur (bool), $navActive ('dashboard'|'data_invoice'|'rekap_nomor'|'manage_staff'|'profil'|'change_password').
+// Opsional: $isAdminOrDirektur (bool), $navActive ('dashboard'|'data_invoice'|'rekap_nomor'|'manage_staff'|'audit_log'|'profil'|'change_password').
 $navActive = $navActive ?? 'dashboard';
 $__sidebar = akun_ringkas($pdo, (int) $staff_id);
 $__isAdmin = in_array((string) ($__sidebar['role'] ?? 'staff'), ['admin', 'direktur'], true);
@@ -12,7 +12,7 @@ unset($_SESSION['akun_flash']);
 <aside class="sidebar" id="appSidebar" aria-label="Menu navigasi utama" aria-hidden="true">
     <div class="sidebar__brand">
         <img src="assets/1.png" alt="Logo AL MUTQON" class="sidebar__brand-img">
-        <span class="sidebar__brand-text">AL MUTQON<span class="sidebar__brand-sub">DASHBOARD</span></span>
+        <span class="sidebar__brand-text">AL MUTQON<span class="sidebar__brand-sub">VALIDATION SYSTEM</span></span>
     </div>
 
     <nav class="sidebar__nav">
@@ -34,6 +34,10 @@ unset($_SESSION['akun_flash']);
         <a class="sidebar__nav-link<?= $navActive === 'manage_staff' ? ' active' : '' ?>" href="manage_staff.php" aria-current="<?= $navActive === 'manage_staff' ? 'page' : 'false' ?>">
             <span class="material-symbols-rounded" aria-hidden="true">group</span>
             Manajemen Staff
+        </a>
+        <a class="sidebar__nav-link<?= $navActive === 'audit_log' ? ' active' : '' ?>" href="audit_log.php" aria-current="<?= $navActive === 'audit_log' ? 'page' : 'false' ?>">
+            <span class="material-symbols-rounded" aria-hidden="true">history</span>
+            Jejak Audit
         </a>
         <?php endif; ?>
     </nav>

@@ -18,8 +18,6 @@ $msg = "Semua field wajib diisi!"; $msg_type = 'error';
 $msg = "Password baru minimal 8 karakter serta harus mengandung huruf dan angka!"; $msg_type = 'error';
 } elseif ($pass_baru !== $pass_konfirmasi) {
 $msg = "Konfirmasi password tidak cocok dengan password baru!"; $msg_type = 'error';
-} elseif ($pass_lama === $pass_baru) {
-$msg = "Password baru tidak boleh sama dengan password lama!"; $msg_type = 'error';
 } else {
 $stmt = $pdo->prepare("SELECT password FROM staff WHERE id = ?");
 $stmt->execute([$staff_id]);
@@ -48,8 +46,8 @@ $navActive = 'change_password';
 <title>Ganti Password - AL MUTQON</title>
 <link rel="icon" type="image/png" href="assets/favicon.png?v=20260919b">
     <link rel="shortcut icon" href="assets/favicon.ico?v=20260919b">
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link href="assets/app.css?v=20260919l" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="assets/app.css?v=20260926g" rel="stylesheet">
 </head>
 <body>
 
@@ -85,32 +83,17 @@ $navActive = 'change_password';
                 <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(csrf_token(), ENT_QUOTES, 'UTF-8') ?>">
                 <div class="field">
                     <label class="field__label" for="pass-lama">Password Lama</label>
-                    <div class="row" style="gap:8px;flex-wrap:nowrap">
-                        <input class="input" type="password" name="password_lama" id="pass-lama" required placeholder="Masukkan password saat ini" style="flex:1">
-                        <button type="button" class="btn btn-light pass-toggle" onclick="togglePass('pass-lama', this)" title="Tampilkan/sembunyikan">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
-                        </button>
-                    </div>
+                    <input class="input" type="password" name="password_lama" id="pass-lama" required placeholder="Masukkan password saat ini">
                 </div>
                 <div class="field">
                     <label class="field__label" for="pass-baru">Password Baru</label>
-                    <div class="row" style="gap:8px;flex-wrap:nowrap">
-                        <input class="input" type="password" name="password_baru" id="pass-baru" required minlength="8" placeholder="Minimal 8 karakter" style="flex:1">
-                        <button type="button" class="btn btn-light pass-toggle" onclick="togglePass('pass-baru', this)" title="Tampilkan/sembunyikan">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
-                        </button>
-                    </div>
+                    <input class="input" type="password" name="password_baru" id="pass-baru" required minlength="8" placeholder="Minimal 8 karakter">
                     <div class="strength"><div id="strength-bar" class="strength__fill" style="width:0"></div></div>
                     <p id="strength-text" class="faint" style="font-size:12px"></p>
                 </div>
                 <div class="field">
                     <label class="field__label" for="pass-konf">Konfirmasi Password Baru</label>
-                    <div class="row" style="gap:8px;flex-wrap:nowrap">
-                        <input class="input" type="password" name="password_konfirmasi" id="pass-konf" required minlength="8" placeholder="Ulangi password baru" style="flex:1">
-                        <button type="button" class="btn btn-light pass-toggle" onclick="togglePass('pass-konf', this)" title="Tampilkan/sembunyikan">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
-                        </button>
-                    </div>
+                    <input class="input" type="password" name="password_konfirmasi" id="pass-konf" required minlength="8" placeholder="Ulangi password baru">
                     <p id="match-text" class="hidden" style="font-size:12px;margin-top:6px"></p>
                 </div>
                 <button type="submit" class="btn btn-primary btn-block">Simpan Password Baru</button>
@@ -182,6 +165,6 @@ document.getElementById('pass-konf').addEventListener('input', function() {
     text.style.marginTop = '6px';
 });
 </script>
-<script src="assets/nav.js?v=20260919c"></script>
+<script src="assets/nav.js?v=20260926a"></script>
 </body>
 </html>

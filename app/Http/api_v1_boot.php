@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 // app/Http/api_v1_boot.php — fondasi bersama endpoint API internal v1.
 // Menyediakan: envelope JSON, auth Bearer (VERIF_API_TOKEN), input gabungan
-// JSON+POST, IP klien, dan service-account (VERIF_API_STAFF_NIP).
+// JSON+POST, IP klien, dan system actor bridge non-login.
 // Dipakai via require dari tiap endpoint (dokumen.php, staf.php, ...).
 // Keluar sendiri dengan 405/401 bila metode/auth tak sah.
 
@@ -62,15 +62,15 @@ function api_ip(): string
     return (string) ($_SERVER['REMOTE_ADDR'] ?? 'cli');
 }
 
-// Service-account khusus API: wajib ada & aktif, selain itu salah konfigurasi server.
+// System actor khusus API: bukan staff, tidak memiliki NIP, jabatan, role, atau login.
 function api_service_account(PDO $pdo): array
 {
-    $staffNip = (string) (getenv('VERIF_API_STAFF_NIP') ?: 'SYSTEM-ALMUTQON');
-    $stmt = $pdo->prepare('SELECT id, nama_lengkap, jabatan, is_active FROM staff WHERE nip = ? LIMIT 1');
-    $stmt->execute([$staffNip]);
+    $actorKey = (string) (getenv('VERIF_API_SYSTEM_ACTOR_KEY') ?: 'almutqon_bridge');
+    $stmt = $pdo->prepare('SELECT id, actor_key, display_name, is_active FROM system_actors WHERE actor_key = ? LIMIT 1');
+    $stmt->execute([$actorKey]);
     $svc = $stmt->fetch();
     if (!$svc || (int) ($svc['is_active'] ?? 0) !== 1) {
-        error_log('API v1: service-account "' . $staffNip . '" tidak ada / nonaktif.');
+        error_log('API v1: system actor bridge tidak ada atau nonaktif.');
         api_respond(500, ['success' => false, 'message' => 'Layanan verifikasi belum siap.']);
     }
     return $svc;

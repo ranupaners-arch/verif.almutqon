@@ -254,6 +254,110 @@ input[type="date"].input { min-height: 45px; }
 .panel__bd { padding: 22px; }
 .panel--edge > .panel__hd { border-top: 0; }
 .panel--sticky { position: sticky; top: 70px; }
+.profile-settings { width: 100%; max-width: 680px; margin: 0 auto; display: flex; flex-direction: column; justify-content: center; min-height: calc(100vh - 180px); }
+.profile-settings > .panel {
+    width: 100%;
+    padding: 26px 28px;
+    background: #FFFFFF;
+    border: 1px solid #E2E8F0;
+    border-radius: 14px;
+    box-shadow: 0 2px 8px -2px rgba(15, 23, 42, .08), 0 4px 16px -4px rgba(15, 23, 42, .06);
+}
+.profile-settings > .panel + .panel { margin-top: 24px; }
+.profile-settings .panel__hd,
+.profile-settings .panel__bd { padding: 0; }
+.profile-settings .panel__hd { border-bottom: none; }
+/* Setarakan ukuran elemen halaman profil dengan profil almutqon */
+.profile-settings .panel__title { font-size: 15px; }
+.profile-settings .input,
+.profile-settings .select { font-size: 14px; padding: 11px 14px; border-radius: 10px; }
+.profile-settings .btn { font-size: 14px; }
+
+/* ---------- Profil: card ala profil almutqon ---------- */
+.profile-card {
+    width: 100%;
+    padding: 26px 28px;
+    background: #FFFFFF;
+    border: 1px solid #E2E8F0;
+    border-radius: 14px;
+    box-shadow: 0 2px 8px -2px rgba(15, 23, 42, .08), 0 4px 16px -4px rgba(15, 23, 42, .06);
+}
+.profile-card + .profile-card { margin-top: 24px; }
+.profile-card__title { font-size: 15px; font-weight: 800; color: var(--ink); }
+.profile-card__sub { font-size: 13px; color: var(--ink-soft); }
+.profile-card__table { border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+.profile-card__row { display: flex; justify-content: space-between; gap: 12px; padding: 11px 14px; font-size: 14px; }
+.profile-card__row + .profile-card__row { border-top: 1px solid var(--line); }
+.profile-card__row span:first-child { color: var(--ink-soft); }
+.profile-card__row code { color: var(--ink); font-weight: 600; }
+/* Samakan ukuran font halaman profil dengan almutqon */
+.profile-card .field__label { font-size: 13px; text-transform: none; letter-spacing: normal; color: #334155; }
+.profile-card .input,
+.profile-card .select { font-size: 14px; }
+.profile-card .btn { font-size: 13px; }
+
+/* Tipografi profil disamakan dengan profil pengajar Al-Mutqon.
+   Scope hanya ke halaman profil agar halaman verifikasi lain tetap utuh. */
+.profile-page {
+    --font-ui: "Plus Jakarta Sans", "Inter", system-ui, -apple-system, sans-serif;
+    --font-display: "Plus Jakarta Sans", "Inter", system-ui, -apple-system, sans-serif;
+    font-family: "Plus Jakarta Sans", "Inter", system-ui, -apple-system, sans-serif;
+    font-size: 14px;
+    line-height: 1.5;
+}
+.profile-page .profile-card__title,
+.profile-page .profile-card__sub,
+.profile-page .field__label,
+.profile-page .input,
+.profile-page .select,
+.profile-page .btn,
+.profile-page .profile-card__table,
+.profile-page .profile-card__row,
+.profile-page .alert {
+    font-family: inherit;
+}
+.profile-page .field__label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1.5;
+    letter-spacing: normal;
+    text-transform: none;
+    color: #334155;
+}
+.profile-page .input,
+.profile-page .select {
+    padding: 11px 14px;
+    border-radius: 10px;
+    font-size: 14px;
+    line-height: 1.5;
+}
+.profile-page .btn {
+    padding: 9px 16px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 600;
+    line-height: normal;
+}
+.profile-page .badge {
+    padding: 4px 10px;
+    font-size: 11px;
+    font-weight: 700;
+}
+.profile-page .profile-card__row {
+    font-size: 13px;
+    line-height: 1.5;
+}
+.profile-page .alert {
+    border-radius: 10px;
+    margin-bottom: 20px;
+    font-size: 13px;
+}
+@media (max-width: 768px) {
+    body:has(.sidebar) .page.profile-settings-page { padding: 18px 16px 48px; }
+    .profile-settings > .panel { padding: 20px 18px; }
+}
 
 /* ---------- Statistik (kartu ala dashboard admin almutqon) ---------- */
 .stat { background: var(--card); border: 1px solid var(--line); border-radius: 14px; box-shadow: 0 4px 16px -4px rgba(15,23,42,.08), 0 2px 6px -2px rgba(15,23,42,.06); padding: 18px 20px; display: flex; align-items: center; gap: 14px; min-width: 0; }
@@ -400,6 +504,26 @@ table.table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
 #strength-bar[data-lv="ok"] { background: #166534; }
 .pass-toggle.active { color: var(--forest); }
 
+/* ---------- Field password dengan tombol lihat/sembunyikan ---------- */
+.pw-field { position: relative; flex: 1; min-width: 0; display: block; }
+.pw-field .input { width: 100%; padding-right: 42px; }
+.pw-eye {
+    position: absolute;
+    top: 50%;
+    right: 6px;
+    transform: translateY(-50%);
+    background: none;
+    border: 0;
+    padding: 6px;
+    cursor: pointer;
+    color: #64748B;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+}
+.pw-eye:hover { color: var(--forest); }
+
 /* ---------- Footer situs ---------- */
 .site-footer {
     text-align: center;
@@ -516,12 +640,56 @@ body:has(.beranda) { padding-bottom: 42px; }
 /* ---------- Dashboard: grid buat dokumen + riwayat ---------- */
 .dash-grid { display: grid; grid-template-columns: 1fr 2.2fr; gap: 24px; align-items: start; }
 
+/* ---------- Prioritas operasional & audit ---------- */
+.ops-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
+.ops-panel { padding: 16px; display: flex; gap: 12px; align-items: flex-start; }
+.ops-panel--link { color: inherit; text-decoration: none; transition: border-color var(--ani), box-shadow var(--ani), transform var(--ani); }
+.ops-panel--link:hover { border-color: rgba(var(--forest-rgb), .45); box-shadow: var(--shadow-md); transform: translateY(-1px); }
+.ops-panel--link:focus-visible { outline: 3px solid rgba(var(--forest-rgb), .25); outline-offset: 2px; }
+.ops-panel__icon { width: 48px; height: 48px; display: grid; place-items: center; flex: 0 0 auto; border-radius: 12px; background: var(--forest-soft); color: var(--forest); font-size: 24px; line-height: 1; }
+.ops-panel__icon--warn { background: var(--warn-soft); color: var(--warn); }
+.ops-panel__icon--slate { background: #E2E8F0; color: #475569; }
+.ops-panel__icon--dark { background: #E0E7FF; color: #3730A3; }
+.ops-panel__label, .ops-panel__note { font-size: 12px; color: var(--ink-soft); line-height: 1.35; }
+.ops-panel__label { font-weight: 700; }
+.ops-panel__value { font: 800 24px/1.15 var(--font-display); margin: 3px 0; color: var(--ink); font-variant-numeric: tabular-nums; }
+.ops-panel__value--link { font-size: 16px; color: var(--forest); margin-top: 6px; }
+.audit-filter { display: flex; align-items: end; flex-wrap: wrap; gap: 12px; }
+.audit-filter__field { min-width: min(100%, 230px); flex: 1 1 230px; }
+.audit-filter__field .input, .audit-filter__field .select { width: 100%; }
+.audit-filter__buttons { display: flex; gap: 8px; padding-bottom: 1px; }
+.audit-pager { padding: 16px 22px; border-top: 1px solid var(--line); }
+
+/* ---------- Manajemen staff ---------- */
+.staff-management { max-width: 1180px !important; margin-inline: auto; }
+.staff-create-panel { margin-bottom: 22px; }
+.staff-create-panel__desc { margin-top: 4px; color: var(--ink-soft); font-size: 12.5px; }
+.staff-form { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px 20px; }
+.staff-form select.select {
+    height: 46px;
+    min-height: 46px;
+    appearance: none;
+    -webkit-appearance: none;
+    padding-right: 42px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23475569' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+}
+.staff-form__actions { grid-column: 1 / -1; display: flex; justify-content: flex-end; align-items: center; padding-top: 16px; border-top: 1px solid var(--line); }
+
 /* ---------- Responsif ---------- */
 @media (max-width: 960px) {
     .grid4 { grid-template-columns: repeat(2, 1fr); }
+    .ops-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
 @media (max-width: 760px) {
+    .dashboard-page { display: flex; flex-direction: column; gap: 0; }
+    .dashboard-page > .grid4 { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin-bottom: 16px !important; }
+    .dashboard-page > .grid4 .stat { min-height: 72px; padding: 10px; gap: 8px; border-radius: 10px; box-shadow: var(--shadow-sm); }
+    .dashboard-page > .grid4 .stat__icon { width: 32px; height: 32px; border-radius: 8px; font-size: 18px; }
+    .dashboard-page > .grid4 .stat__value { font-size: 16px; }
+    .dashboard-page > .grid4 .stat__label { font-size: 10px; line-height: 1.2; }
     .dash-grid { grid-template-columns: 1fr; }
     .panel--sticky { position: static; top: auto; }
     .landing__panel { min-height: 560px; }
@@ -529,6 +697,16 @@ body:has(.beranda) { padding-bottom: 42px; }
     .doc-grid { grid-template-columns: 1fr; }
     .doc-cell:nth-child(odd) { border-right: 0; }
     .grid2, .grid3, .grid4 { grid-template-columns: 1fr; }
+    .ops-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin-bottom: 16px !important; }
+    .ops-panel { min-height: 72px; padding: 10px; gap: 8px; border-radius: 10px; box-shadow: var(--shadow-sm); }
+    .ops-panel__icon { width: 32px; height: 32px; border-radius: 8px; font-size: 18px; }
+    .ops-panel__label { font-size: 10px; line-height: 1.2; }
+    .ops-panel__value { font-size: 17px; margin: 2px 0; }
+    .ops-panel__value--link { font-size: 12px; margin-top: 4px; }
+    .ops-panel__note { display: none; }
+    .staff-form { grid-template-columns: 1fr; gap: 14px; }
+    .staff-form__actions { padding-top: 14px; }
+    .staff-form__actions .btn { width: 100%; }
     .table-wrap { margin: 0 -18px; padding: 0 18px; }
     .sig-block { flex-direction: column; text-align: center; }
     .verify-body { padding: 20px; }
@@ -600,7 +778,10 @@ body.no-scroll { overflow: hidden; }
     color: #CBD5E1; font-weight: 500; font-size: 13.5px; text-decoration: none;
     transition: all .2s ease;
 }
-.sidebar__nav-link .material-symbols-rounded { font-size: 20px; flex-shrink: 0; }
+.sidebar__nav-link .material-symbols-rounded {
+    width: 20px; height: 20px; display: grid; place-items: center; flex: 0 0 20px;
+    font-size: 20px; line-height: 1;
+}
 .sidebar__nav-link:hover { background: rgba(255,255,255,.06); color: #fff; }
 .sidebar__nav-link.active { background: var(--forest); color: #fff; box-shadow: 0 8px 20px -8px rgba(var(--forest-rgb),.8); }
 .sidebar__nav-link.active:hover { background: var(--forest-dark); }
@@ -632,7 +813,7 @@ body.no-scroll { overflow: hidden; }
 }
 .filter-tab:hover { color: var(--forest); border-color: var(--forest); }
 .filter-tab.active { background: var(--forest); color: #fff; border-color: var(--forest); }
-.search-input { max-width: 300px; }
+.search-input { width: min(440px, 100%); max-width: 440px; }
 .pager { display: flex; align-items: center; justify-content: flex-end; gap: 10px; padding-top: 14px; }
 .pager .is-off { opacity: .45; pointer-events: none; }
 @media (max-width: 760px) {
@@ -640,7 +821,25 @@ body.no-scroll { overflow: hidden; }
     .search-input { max-width: none; flex: 1; }
 }
 
-body:has(.sidebar) { background: #F1F5F9; }
+/* Shell staff mengikuti tipografi dan proporsi dashboard pengajar Al-Mutqon. */
+body:has(.sidebar) {
+    --font-ui: "Plus Jakarta Sans", "Inter", system-ui, -apple-system, sans-serif;
+    --font-display: "Plus Jakarta Sans", "Inter", system-ui, -apple-system, sans-serif;
+    background: #F1F5F9;
+    color: #1E293B;
+    font-family: "Plus Jakarta Sans", "Inter", system-ui, -apple-system, sans-serif;
+    font-size: 14px;
+    line-height: 1.5;
+}
+body:has(.sidebar) .sidebar__brand { padding: 22px 22px; }
+body:has(.sidebar) .sidebar__brand-img { width: 40px; height: 40px; }
+body:has(.sidebar) .sidebar__brand-text { font-size: 14.5px; }
+body:has(.sidebar) .sidebar__brand-sub {
+    font-size: 11px;
+    color: #94A3B8;
+    letter-spacing: 1px;
+    margin-top: 0;
+}
 body:has(.sidebar) .page { max-width: none; padding: 28px 32px 56px; }
 @media (max-width: 760px) {
     body:has(.sidebar) .page { padding: 20px 14px 48px; }

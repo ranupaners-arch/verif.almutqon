@@ -43,7 +43,7 @@ if ($redirect_err !== '' && $error_msg === '') {
 }
 
 // FETCH: hanya invoice, terbaru dulu (tanpa nomor urut).
-$stmt = $pdo->prepare("SELECT d.*, s.nama_lengkap as staff_name FROM dokumen d LEFT JOIN staff s ON d.staff_id = s.id WHERE d.jenis = 'invoice' ORDER BY d.created_at DESC");
+$stmt = $pdo->prepare("SELECT d.*, COALESCE(s.nama_lengkap, sa.display_name) AS staff_name FROM dokumen d LEFT JOIN staff s ON d.staff_id = s.id LEFT JOIN system_actors sa ON d.system_actor_id = sa.id WHERE d.jenis = 'invoice' ORDER BY d.created_at DESC");
 $stmt->execute();
 $docs = $stmt->fetchAll();
 
@@ -61,8 +61,8 @@ $navActive = 'data_invoice';
 <title>Data Invoice - AL MUTQON</title>
 <link rel="icon" type="image/png" href="assets/favicon.png?v=20260919b">
     <link rel="shortcut icon" href="assets/favicon.ico?v=20260919b">
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link href="assets/app.css?v=20260919l" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="assets/app.css?v=20260926g" rel="stylesheet">
 </head>
 <body>
 
@@ -116,6 +116,6 @@ $navActive = 'data_invoice';
     </div>
 </main>
 
-<script src="assets/nav.js?v=20260919c"></script>
+<script src="assets/nav.js?v=20260926a"></script>
 </body>
 </html>
