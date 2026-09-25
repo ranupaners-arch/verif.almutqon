@@ -3,6 +3,51 @@ Entri terbaru di paling atas. Ditulis sesuai aturan adaCODE (perbaikan terverifi
 
 ---
 
+### Fix #7 — QR Code dokumen baru tidak muncul & tombol "Download QR (HD PNG)" mati di Dashboard
+Gejala: setelah membuat dokumen baru di Dashboard, panel "QR Code Verifikasi" kosong (tidak ada QR tampil) dan klik "Download QR (HD PNG)" tidak melakukan apa pun (console: `Uncaught SyntaxError: Unexpected token ')'` → `downloadQR is not defined`).
+
+| Aspek | Rincian |
+|---|---|
+| Tanggal | 2026-09-25 |
+| File | `app/Pages/dashboard.php:441` |
+| Masalah | Blok `<script>` QR (preview `QRCodeStyling` + fungsi `downloadQR`) ditutup dengan `});` setelah `highResQR.download(...)` padahal `function downloadQR() {` sudah ditutup `}` di baris sebelumnya — satu kurung tutup berlebih tanpa pembuka |
+| Akar | Kesalahan penutupan blok fungsi JS; `php -l` tidak menangkapnya (hanya sintaks PHP), sehingga lolos sampai runtime browser. SyntaxError membatalkan **seluruh blok script** — bukan hanya `downloadQR` — sehingga preview QR ikut mati |
+| Fix | Ganti `});` menjadi `}` (penutup `function downloadQR`) |
+| Verifikasi | Reproduksi headless Chrome sebelum fix: `QRCodeStyling` termuat (`styling=function`), `#qr-code-container` tetap `svg_children=0` (bug terbukti). Setelah fix: `svg_children=1` (QR SVG terender), `errors=[]`. E2E HTTP: login staff → buat dokumen → kode 6-digit + verify_url muncul; `index.php?token=…` menampilkan "Dokumen Sah & Terverifikasi". `php -l` dashboard bersih. Data uji (2 dokumen TEST-QRBUG-*) dihapus |
+| Pelajaran | Validasi JS inline hasil render PHP harus lewat `node --check` atau browser sungguhan — `php -l` buta terhadap isi blok `<script>`; satu kurung salah di fungsi manapun membunuh semua JS di blok yang sama |
+| Log Keyword | QRCodeStyling, downloadQR, syntax error, unexpected token, qr-code-container, preview kosong |
+| Deploy | BELUM — ikut deploy bersama Fix #5/#6 |
+
+### Fix #6 — Lupa & reset password tak terjangkau: entry publik `lupa_password.php`/`reset_password.php` hilang
+Gejala: tautan "Lupa kata sandi?" di halaman login staff (`staff.php`) membuka halaman Validasi (landing) — `/lupa_password.php` dan `/reset_password.php` jatuh ke fallback nginx → `public/index.php`. Fitur reset password seluruhnya tak dapat diakses dari browser.
+
+| Aspek | Rincian |
+|---|---|
+| Tanggal | 2026-09-25 |
+| File | Tambah: `public/lupa_password.php`, `public/reset_password.php` |
+| Masalah | Halaman `app/Pages/lupa_password.php` & `app/Pages/reset_password.php` lengkap (token reset 30 menit, sekali pakai, anti-enumeration email, `staff_mark_reset_used`) tapi tanpa entry di `public/` — tak ada URL yang memuatnya |
+| Akar | Konvensi proyek: tiap Page butuh shim `public/<nama>.php` (`require dirname(__DIR__).'/app/Pages/<nama>.php'`); dua file shim ini terlupa saat fitur dibangun |
+| Fix | Tambahkan dua shim publik mengikuti pola file lain (mis. `public/change_password.php`) |
+| Verifikasi | `php -l` bersih; `curl /lupa_password.php` → `<title>Lupa Password — AL MUTQON`; `curl /reset_password.php?token=x` → halaman reset; E2E HTTP penuh: lupa → token dibuat (64 hex) → reset password → login dgn pass baru 302 → token bekas ditolak — termasuk pengujian anti-enumeration (email tak dikenal → pesan sama), semuanya lulus (suite `verif_manage_flow` 25/25) |
+| Pelajaran | Fitur yang halamannya tak pernah di-route (tanpa shim `public/`) tampak berfungsi di kode namun mati total di produksi — uji link/URL nyata, bukan hanya fungsi PHP |
+| Log Keyword | lupa_password, reset_password, route, entry publik, siluman 404, fallback index |
+| Deploy | BELUM — dua file baru ikut deploy bersama Fix #5 |
+
+### Fix #5 — Keamanan konfigurasi: fallback secret + IDOR download PDF ber-ID berurut
+Gejala: `APP_SECRET_KEY` punya fallback default hardcoded (`local-development-key-change-before-production`) sehingga bila `.env` gagal terbaca, token dokumen (HMAC) menjadi dapat diprediksi; `download.php?id=<int>` publik tanpa token sehingga PDF dokumen `active` bisa diunduh siapa pun dengan menebak/scan ID berurutan.
+
+| Aspek | Rincian |
+|---|---|
+| Tanggal | 2026-09-24 |
+| File | `app/Bootstrap.php:20`, `app/Http/download_document.php`, `app/Pages/index.php:153` |
+| Masalah | Secret fallback = kunci prediktabel utk `hash_hmac` token dokumen (dashboard & API create); IDOR download PDF dokumen aktif (struk berisi data pribadi penerima) |
+| Akar | Fallback default dibiarkan sebagai "titik nyaman" bootstrap; regulasi sebelumnya (`CATATAN.md:126`) sengaja membuka download tanpa token — kini diperkuat karena PDF berisi data pribadi |
+| Fix | (1) fail-fast: `APP_SECRET_KEY` kosong → `error_log` + HTTP 500 + pesan umum (tanpa nilai default); (2) download PHP butuh `&t=<HMAC-SHA256("download:{id}", secret)>` dengan `hash_equals` (403 bila tak sah); `index.php` membangun token otomatis. QR/tautan verifikasi (`index.php?token=…`) TIDAK berubah; hanya link unduh kini bertoken |
+| Verifikasi | `php -l` bersih (Bootstrap/download/index); runtime: `APP_SECRET_KEY=` → fail-fast pesan umum tampil; token-verify konsisten (index & download pakai formula sama); HTTP end-to-end tak dijalankan (web server lokal nonaktif) |
+| Pelajaran | Jangan pernah memberi nilai default untuk secret produksi; proteksi resource berbasis ID berurut minimal = signed URL HMAC + `hash_equals`, tanpa mengubah skema URL verifikasi |
+| Log Keyword | APP_SECRET_KEY, fail-fast, download, signed URL, IDOR, HMAC |
+| Deploy | BELUM — ubah ini bagian dari diterapkan; tak mengubah URL QR; link `download.php?id=` lama (tanpa `&t=`) kini 403 (disengaja) |
+
 ### Fix #4 — Pembersihan file sampah & penghapusan backdoor DEBUG auto-login
 Gejala: `public/__sesi.php` (auto-login `staff_id=2` tanpa password, DEBUG) masih di web root — lubang autentikasi; `public/api/theme.php` adalah tombstone yang selalu balas 410; `app/Support/migrate_theme_system.php` migrasi fitur tema yang sudah dihapus; folder `storage/uploads_legacy_t/` kosong (hanya `.gitkeep`).
 

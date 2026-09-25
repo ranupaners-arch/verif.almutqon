@@ -438,7 +438,7 @@ function downloadQR() {
         cornersDotOptions: { color: "#F59E0B", type: "dot" }
     });
     highResQR.download({ name: <?= json_encode('QR-ALMUTQON-' . $last_code . '-HD') ?>, extension: "png" });
-});
+}
 <?php endif; ?>
 </script>
 <script src="assets/nav.js?v=20260919c"></script>

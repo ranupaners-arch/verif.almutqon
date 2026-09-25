@@ -17,7 +17,13 @@ if (is_file($envFile)) {
 }
 
 define('APP_URL', rtrim(getenv('APP_URL') ?: 'http://localhost', '/'));
-define('APP_SECRET_KEY', getenv('APP_SECRET_KEY') ?: 'local-development-key-change-before-production');
+$appSecretKey = getenv('APP_SECRET_KEY');
+if ($appSecretKey === false || $appSecretKey === '') {
+    error_log('APP_SECRET_KEY kosong — aplikasi dihentikan (fail-fast).');
+    http_response_code(500);
+    exit('Konfigurasi server tidak lengkap. Silakan hubungi administrator.');
+}
+define('APP_SECRET_KEY', $appSecretKey);
 define('MAX_UPLOAD_BYTES', 10 * 1024 * 1024);
 define('UPLOAD_RATE_WINDOW_SECONDS', 600);
 define('MAX_UPLOAD_ATTEMPTS', 15);
