@@ -658,7 +658,15 @@ body:has(.beranda) { padding-bottom: 42px; }
 .audit-filter__field { min-width: min(100%, 230px); flex: 1 1 230px; }
 .audit-filter__field .input, .audit-filter__field .select { width: 100%; }
 .audit-filter__buttons { display: flex; gap: 8px; padding-bottom: 1px; }
+.audit-page { width: 100%; max-width: 900px; margin-inline: auto; }
+.audit-page > .panel { width: 100%; }
 .audit-pager { padding: 16px 22px; border-top: 1px solid var(--line); }
+.audit-table { min-width: 760px; table-layout: fixed; }
+.audit-table th:nth-child(1) { width: 145px; }
+.audit-table th:nth-child(2) { width: 170px; }
+.audit-table th:nth-child(3) { width: 150px; }
+.audit-table th:nth-child(5) { width: 135px; }
+.audit-table td { overflow-wrap: anywhere; }
 
 /* ---------- Manajemen staff ---------- */
 .staff-management { max-width: 1180px !important; margin-inline: auto; }
@@ -872,3 +880,6 @@ body:has(.sidebar) .page { max-width: none; padding: 28px 32px 56px; }
     body:has(.sidebar) .nav-toggle { display: none; }
     body:has(.sidebar) .sidebar-backdrop { display: none; }
 }
+
+/* Audit log mengikuti ukuran panel normal, setelah override shell desktop. */
+body:has(.sidebar) .audit-page { max-width: 900px; margin-inline: auto; }
