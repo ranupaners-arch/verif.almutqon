@@ -2,13 +2,11 @@ Options -Indexes
 
 RewriteEngine On
 
-# Lindungi source aplikasi, data runtime, dan metadata repository.
-RewriteRule ^(?:app|storage|handoffs|\.git)(?:/|$) - [F,L,NC]
-RewriteRule ^\.env(?:\.|$) - [F,L,NC]
+# Fallback untuk hosting yang belum dapat mengarahkan document root ke public/.
+# Produksi tetap disarankan memakai public/ sebagai satu-satunya document root.
+RewriteRule ^(?:app|storage|docs|handoffs|\.git)(?:/|$) - [F,L,NC]
+RewriteRule ^(?:\.env(?:\.|$)|AGENTS\.md$|README\.md$|CATATAN\.md$|LAPORAN\.md$|CHANGELOG_FIXES\.md$) - [F,L,NC]
 
-# Kompatibilitas untuk hosting yang memakai folder repository sebagai
-# document root. Root index menjadi entry point kanonis.
 RewriteRule ^public(?:/|$) - [L,NC]
-RewriteRule ^$ index.php [L]
-RewriteRule ^index\.php$ - [L]
+RewriteRule ^(?:index\.php)?$ public/index.php [L]
 RewriteRule ^(.+)$ public/$1 [L]

@@ -65,7 +65,11 @@ function api_ip(): string
 // System actor khusus API: bukan staff, tidak memiliki NIP, jabatan, role, atau login.
 function api_service_account(PDO $pdo): array
 {
-    $actorKey = (string) (getenv('VERIF_API_SYSTEM_ACTOR_KEY') ?: 'almutqon_bridge');
+    $actorKey = trim((string) (getenv('VERIF_API_SYSTEM_ACTOR_KEY') ?: ''));
+    if ($actorKey === '') {
+        error_log('VERIF_API_SYSTEM_ACTOR_KEY belum dikonfigurasi.');
+        api_respond(500, ['success' => false, 'message' => 'Layanan verifikasi belum siap.']);
+    }
     $stmt = $pdo->prepare('SELECT id, actor_key, display_name, is_active FROM system_actors WHERE actor_key = ? LIMIT 1');
     $stmt->execute([$actorKey]);
     $svc = $stmt->fetch();
@@ -81,11 +85,13 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 }
 
 $expected = (string) (getenv('VERIF_API_TOKEN') ?: '');
-if ($expected === '' || !hash_equals($expected, api_bearer())) {
+if (strlen($expected) < 32 || !hash_equals($expected, api_bearer())) {
     api_respond(401, ['success' => false, 'message' => 'Tidak terautentikasi.']);
 }
 
 // Rate limiting per IP untuk API v1
-if (!rate_limit_ok($pdo, 'api_v1_request', api_ip(), MAX_API_ATTEMPTS, API_RATE_WINDOW_SECONDS)) {
+$apiIp = api_ip();
+if (!rate_limit_ok($pdo, 'api_v1_request', $apiIp, MAX_API_ATTEMPTS, API_RATE_WINDOW_SECONDS)) {
     api_respond(429, ['success' => false, 'message' => 'Terlalu banyak permintaan. Silakan coba lagi nanti.']);
 }
+rate_limit_record($pdo, 'api_v1_request', $apiIp, 'Permintaan API internal v1');

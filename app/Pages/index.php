@@ -1,35 +1,56 @@
 <?php
 require dirname(__DIR__) . '/Bootstrap.php';
 
-$token = $_GET['token'] ?? '';
-$code  = $_GET['code']  ?? '';
+$token = trim((string) ($_GET['token'] ?? ''));
+$code = strtoupper(trim((string) ($_GET['code'] ?? '')));
 $dokumen = null;
 $is_valid = false;
 $error_msg = '';
 $staff_login_error = $_SESSION['staff_login_error'] ?? '';
 unset($_SESSION['staff_login_error']);
 
-if (!empty($token)) {
-    $stmt = $pdo->prepare("SELECT * FROM dokumen WHERE token = ?");
-    $stmt->execute([$token]);
-    $dokumen = $stmt->fetch();
-    if (!$dokumen) {
-        $error_msg = 'Token tidak ditemukan dalam sistem.';
-    } elseif ($dokumen['status'] === 'active') {
-        $is_valid = true;
+if ($token !== '' || $code !== '') {
+    $verificationIp = (string) ($_SERVER['REMOTE_ADDR'] ?? 'unknown');
+    if (!rate_limit_ok($pdo, 'public_verify', $verificationIp, MAX_VERIFY_ATTEMPTS, VERIFY_RATE_WINDOW_SECONDS)) {
+        http_response_code(429);
+        $error_msg = 'Terlalu banyak percobaan verifikasi. Silakan coba lagi nanti.';
     } else {
-        $error_msg = 'Dokumen ini telah dicabut dan tidak lagi valid.';
+        rate_limit_record($pdo, 'public_verify', $verificationIp, 'Permintaan verifikasi dokumen publik');
     }
-} elseif (!empty($code)) {
-    $stmt = $pdo->prepare("SELECT * FROM dokumen WHERE code_6digit = ?");
-    $stmt->execute([strtoupper(trim($code))]);
-    $dokumen = $stmt->fetch();
-    if (!$dokumen) {
-        $error_msg = 'Kode 6-digit tidak valid.';
-    } elseif ($dokumen['status'] === 'active') {
-        $is_valid = true;
+}
+
+$documentColumns = 'id, token, code_6digit, no_surat, perihal, penerima, tanggal_dokumen, '
+    . 'penandatangan, jabatan, status, pdf_path, waktu_pengesahan';
+
+if ($error_msg === '' && $token !== '') {
+    if (strlen($token) !== 64 || !ctype_xdigit($token)) {
+        $error_msg = 'Format token tidak valid.';
     } else {
-        $error_msg = 'Dokumen ini telah dicabut dan tidak lagi valid.';
+        $stmt = $pdo->prepare("SELECT {$documentColumns} FROM dokumen WHERE token = ? LIMIT 1");
+        $stmt->execute([$token]);
+        $dokumen = $stmt->fetch();
+        if (!$dokumen) {
+            $error_msg = 'Token tidak ditemukan dalam sistem.';
+        } elseif ($dokumen['status'] === 'active') {
+            $is_valid = true;
+        } else {
+            $error_msg = 'Dokumen ini telah dicabut dan tidak lagi valid.';
+        }
+    }
+} elseif ($error_msg === '' && $code !== '') {
+    if (strlen($code) !== 6 || !ctype_alnum($code)) {
+        $error_msg = 'Format kode verifikasi tidak valid.';
+    } else {
+        $stmt = $pdo->prepare("SELECT {$documentColumns} FROM dokumen WHERE code_6digit = ? LIMIT 1");
+        $stmt->execute([$code]);
+        $dokumen = $stmt->fetch();
+        if (!$dokumen) {
+            $error_msg = 'Kode 6-digit tidak valid.';
+        } elseif ($dokumen['status'] === 'active') {
+            $is_valid = true;
+        } else {
+            $error_msg = 'Dokumen ini telah dicabut dan tidak lagi valid.';
+        }
     }
 }
 

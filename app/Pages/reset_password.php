@@ -22,13 +22,13 @@ if ($token === '') {
 
             if ($password === '') {
                 $error = 'Password baru wajib diisi.';
-            } elseif (strlen($password) < 8) {
-                $error = 'Password minimal 8 karakter.';
+            } elseif (!password_is_valid($password)) {
+                $error = 'Password minimal 8 karakter serta harus mengandung huruf dan angka.';
             } elseif ($password !== $konfirmasi) {
                 $error = 'Konfirmasi password tidak cocok.';
             } else {
                 $stmt = $pdo->prepare('UPDATE staff SET password = ? WHERE email = ?');
-                $stmt->execute([password_hash($password, PASSWORD_BCRYPT), $row['email']]);
+                $stmt->execute([password_hash($password, PASSWORD_DEFAULT), $row['email']]);
 
                 staff_mark_reset_used($pdo, $token);
 

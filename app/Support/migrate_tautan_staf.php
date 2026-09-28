@@ -12,7 +12,7 @@ declare(strict_types=1);
  *   php app/Support/migrate_tautan_staf.php --dry-run    # preview tanpa mengubah apa pun
  */
 
-require dirname(__DIR__) . '/Bootstrap.php';
+require_once dirname(__DIR__) . '/Bootstrap.php';
 
 $dryRun = in_array('--dry-run', $argv, true);
 

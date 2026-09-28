@@ -16,10 +16,31 @@ if (is_file($envFile)) {
     }
 }
 
-define('APP_URL', rtrim(getenv('APP_URL') ?: 'http://localhost', '/'));
+$appEnvironment = strtolower(trim((string) (getenv('APP_ENV') ?: 'production')));
+if (!in_array($appEnvironment, ['production', 'staging', 'development', 'testing'], true)) {
+    error_log('APP_ENV tidak valid.');
+    http_response_code(500);
+    exit('Konfigurasi server tidak lengkap. Silakan hubungi administrator.');
+}
+define('APP_ENV', $appEnvironment);
+define('APP_DEBUG', filter_var(getenv('APP_DEBUG') ?: 'false', FILTER_VALIDATE_BOOL));
+
+$appUrl = rtrim(trim((string) (getenv('APP_URL') ?: '')), '/');
+if ($appUrl === '' || filter_var($appUrl, FILTER_VALIDATE_URL) === false) {
+    error_log('APP_URL kosong atau tidak valid.');
+    http_response_code(500);
+    exit('Konfigurasi server tidak lengkap. Silakan hubungi administrator.');
+}
+if (APP_ENV === 'production' && !str_starts_with(strtolower($appUrl), 'https://')) {
+    error_log('APP_URL produksi wajib memakai HTTPS.');
+    http_response_code(500);
+    exit('Konfigurasi server tidak lengkap. Silakan hubungi administrator.');
+}
+define('APP_URL', $appUrl);
+
 $appSecretKey = getenv('APP_SECRET_KEY');
-if ($appSecretKey === false || $appSecretKey === '') {
-    error_log('APP_SECRET_KEY kosong — aplikasi dihentikan (fail-fast).');
+if ($appSecretKey === false || strlen($appSecretKey) < 32) {
+    error_log('APP_SECRET_KEY kosong atau terlalu pendek.');
     http_response_code(500);
     exit('Konfigurasi server tidak lengkap. Silakan hubungi administrator.');
 }
@@ -29,11 +50,30 @@ define('UPLOAD_RATE_WINDOW_SECONDS', 600);
 define('MAX_UPLOAD_ATTEMPTS', 15);
 define('API_RATE_WINDOW_SECONDS', 60);
 define('MAX_API_ATTEMPTS', 60);
+define('VERIFY_RATE_WINDOW_SECONDS', 60);
+define('MAX_VERIFY_ATTEMPTS', 30);
+define('LOGIN_RATE_WINDOW_SECONDS', 900);
+define('MAX_LOGIN_ATTEMPTS', 5);
+define('RESET_RATE_WINDOW_SECONDS', 900);
+define('MAX_RESET_ATTEMPTS', 5);
+
+$requestIsHttps = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off');
+
+if (PHP_SAPI !== 'cli') {
+    header_remove('X-Powered-By');
+    header('X-Content-Type-Options: nosniff');
+    header('X-Frame-Options: SAMEORIGIN');
+    header('Referrer-Policy: strict-origin-when-cross-origin');
+    header('Permissions-Policy: camera=(self), microphone=(), geolocation=()');
+    if (APP_ENV === 'production' && $requestIsHttps) {
+        header('Strict-Transport-Security: max-age=31536000');
+    }
+}
 
 session_start([
     'cookie_httponly' => true,
     'cookie_samesite' => 'Strict',
-    'cookie_secure' => (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off'),
+    'cookie_secure' => APP_ENV === 'production' || $requestIsHttps,
     'use_strict_mode' => true,
     'gc_maxlifetime' => 1800,
 ]);
@@ -99,6 +139,15 @@ function rate_limit_ok(PDO $pdo, string $action, string $identifier, int $maxAtt
     return (int) $stmt->fetchColumn() < $maxAttempts;
 }
 
+function rate_limit_record(PDO $pdo, string $action, string $identifier, string $description): void
+{
+    $stmt = $pdo->prepare(
+        'INSERT INTO activity_log (staff_id, system_actor_id, action, dokumen_id, description, ip_address)
+         VALUES (NULL, NULL, ?, NULL, ?, ?)'
+    );
+    $stmt->execute([$action, $description, $identifier]);
+}
+
 /**
  * Lokasi fisik file PDF dari nilai `pdf_path` di database.
  *
@@ -160,13 +209,14 @@ function resolve_pdf_path(?string $pdf_path): ?string
 function staff_store_reset_token(PDO $pdo, string $email): string
 {
     $token = bin2hex(random_bytes(32));
+    $tokenHash = hash('sha256', $token);
     $stmt = $pdo->prepare('DELETE FROM password_resets WHERE email = ?');
     $stmt->execute([$email]);
 
     $stmt = $pdo->prepare(
         'INSERT INTO password_resets (email, token, expires_at) VALUES (?, ?, DATE_ADD(NOW(), INTERVAL 30 MINUTE))'
     );
-    $stmt->execute([$email, $token]);
+    $stmt->execute([$email, $tokenHash]);
 
     return $token;
 }
@@ -176,12 +226,16 @@ function staff_store_reset_token(PDO $pdo, string $email): string
  */
 function staff_find_valid_reset(PDO $pdo, string $token): array|false
 {
+    if (!ctype_xdigit($token) || strlen($token) !== 64) {
+        return false;
+    }
+
     $stmt = $pdo->prepare(
         'SELECT id, email FROM password_resets
          WHERE token = ? AND used = 0 AND expires_at > NOW()
          ORDER BY id DESC LIMIT 1'
     );
-    $stmt->execute([$token]);
+    $stmt->execute([hash('sha256', $token)]);
     return $stmt->fetch();
 }
 
@@ -191,22 +245,36 @@ function staff_find_valid_reset(PDO $pdo, string $token): array|false
 function staff_mark_reset_used(PDO $pdo, string $token): void
 {
     $stmt = $pdo->prepare('UPDATE password_resets SET used = 1 WHERE token = ?');
-    $stmt->execute([$token]);
+    $stmt->execute([hash('sha256', $token)]);
 }
 
 /**
- * Stub pengiriman email (diganti implementasi SMTP nyata bila diperlukan).
+ * Kirim email melalui mail transport server. MAIL_ENABLED harus aktif.
  * Mengembalikan ['ok' => bool, 'error' => string].
  */
 function send_mail(string $to, string $subject, string $body): array
 {
-    // Jika ada konfigurasi SMTP di .env (MAIL_HOST, dll), implementasikan di sini.
-    // Untuk sekarang hanya log ke error_log.
-    error_log("[mail] TO: $to | SUBJECT: $subject");
-    if (getenv('APP_DEBUG') === 'true') {
-        error_log("[mail] BODY: $body");
+    if (!filter_var(getenv('MAIL_ENABLED') ?: 'false', FILTER_VALIDATE_BOOL)) {
+        return ['ok' => false, 'error' => 'Mail transport dinonaktifkan'];
     }
-    return ['ok' => false, 'error' => 'SMTP not configured'];
+
+    $from = trim((string) (getenv('MAIL_FROM') ?: ''));
+    $fromName = trim((string) (getenv('MAIL_FROM_NAME') ?: 'AL MUTQON Verification'));
+    if (!filter_var($to, FILTER_VALIDATE_EMAIL) || !filter_var($from, FILTER_VALIDATE_EMAIL)) {
+        return ['ok' => false, 'error' => 'Alamat email tidak valid'];
+    }
+
+    $safeFromName = str_replace(["\r", "\n"], '', $fromName);
+    $headers = [
+        'From: ' . $safeFromName . ' <' . $from . '>',
+        'Content-Type: text/plain; charset=UTF-8',
+        'X-Mailer: PHP/' . PHP_VERSION,
+    ];
+
+    $sent = mail($to, $subject, $body, implode("\r\n", $headers));
+    return $sent
+        ? ['ok' => true, 'error' => '']
+        : ['ok' => false, 'error' => 'Mail transport gagal mengirim pesan'];
 }
 
 /**

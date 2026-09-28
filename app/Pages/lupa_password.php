@@ -4,11 +4,18 @@ require dirname(__DIR__) . '/Bootstrap.php';
 
 $kirim_ok = false;
 $error = '';
+$mailEnabled = filter_var(getenv('MAIL_ENABLED') ?: 'false', FILTER_VALIDATE_BOOL);
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $clientIp = (string) ($_SERVER['REMOTE_ADDR'] ?? 'unknown');
     if (!verify_csrf()) {
         $error = 'Permintaan tidak valid. Silakan muat ulang halaman dan coba lagi.';
+    } elseif (!$mailEnabled) {
+        $error = 'Layanan reset melalui email belum tersedia. Silakan hubungi administrator.';
+    } elseif (!rate_limit_ok($pdo, 'password_reset_request', $clientIp, MAX_RESET_ATTEMPTS, RESET_RATE_WINDOW_SECONDS)) {
+        $error = 'Terlalu banyak permintaan reset. Silakan coba lagi nanti.';
     } else {
+        rate_limit_record($pdo, 'password_reset_request', $clientIp, 'Permintaan reset password');
         $email = trim($_POST['email'] ?? '');
         if ($email === '') {
             $error = 'Email wajib diisi.';
@@ -20,23 +27,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt->execute([$email]);
             if ($stmt->fetch()) {
                 $token = staff_store_reset_token($pdo, $email);
-                $host = ($_SERVER['HTTP_HOST'] ?? 'verif.almutqon.test');
-                $resetUrl = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' ? 'https' : 'http')
-                    . '://' . $host . '/reset_password.php?token=' . $token;
+                $resetUrl = APP_URL . '/reset_password.php?token=' . rawurlencode($token);
 
                 $subject = 'Reset Password Staff AL MUTQON';
                 $body = "Anda meminta reset password akun staff AL MUTQON.\n\n"
                     . "Klik link berikut untuk membuat password baru:\n{$resetUrl}\n\n"
                     . "Link berlaku 30 menit. Abaikan email ini jika bukan Anda yang meminta.\n";
 
-                // Kirim via SMTP (config/mail.php belum ada di verif). JANGAN pernah tampilkan link reset di layar.
-                // Jika SMTP gagal, link hanya dicatat ke log server untuk keperluan pengembangan.
                 $mail = send_mail($email, $subject, $body);
                 if (!$mail['ok']) {
-                    error_log('[mail] ' . $mail['error']);
-                    if (getenv('APP_DEBUG') === 'true') {
-                        error_log('[reset-link-debug] ' . $resetUrl);
-                    }
+                    error_log('[mail] Pengiriman reset password gagal: ' . $mail['error']);
                 }
             }
             $kirim_ok = true;

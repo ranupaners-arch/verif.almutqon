@@ -63,3 +63,14 @@ CREATE TABLE IF NOT EXISTS activity_log (
     CONSTRAINT fk_activity_dokumen FOREIGN KEY (dokumen_id) REFERENCES dokumen(id) ON DELETE SET NULL,
     INDEX idx_activity_login (action, ip_address, created_at)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS password_resets (
+    id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    email VARCHAR(190) NOT NULL,
+    token CHAR(64) NOT NULL,
+    expires_at DATETIME NOT NULL,
+    used TINYINT(1) NOT NULL DEFAULT 0,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_password_reset_email (email),
+    INDEX idx_password_reset_token (token)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

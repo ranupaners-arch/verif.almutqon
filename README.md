@@ -1,16 +1,30 @@
 # AL MUTQON Verification System
 
+Aplikasi PHP native untuk verifikasi dan pengelolaan berbagai jenis dokumen digital AL MUTQON.
+
 ## Struktur
 
-- `public/` adalah satu-satunya web root: entry point dan aset browser.
-- `app/` menyimpan bootstrap, konfigurasi, handler HTTP, dan halaman.
-- `storage/uploads/` menyimpan PDF dan tidak boleh dapat diakses langsung dari web.
+- `public/` adalah document root dan berisi entry point serta aset browser.
+- `app/` berisi konfigurasi, HTTP handler, halaman, schema, dan migrasi.
+- `storage/uploads/` menyimpan PDF privat yang hanya dilayani melalui endpoint download.
+- `docs/` berisi dokumentasi pengembangan dan tidak ikut menjadi web root.
+- `index.php` dan `.htaccess` di root hanya fallback untuk hosting yang tidak dapat memakai `public/` sebagai document root.
 
 ## Menjalankan lokal
 
-1. Atur document root Herd/web server ke folder `public/`.
-2. Salin `.env.example` menjadi `.env`, lalu isi `APP_URL` dengan URL lokal Herd dan buat `APP_SECRET_KEY` acak yang panjang.
-3. Impor `app/Database/schema.sql` ke database yang dikonfigurasi.
-4. Pastikan PHP dapat menulis ke `storage/uploads/`.
+1. Arahkan document root web server ke folder `public/`.
+2. Salin `.env.example` menjadi `.env` dan isi konfigurasi lokal.
+3. Impor `app/Database/schema.sql` untuk database baru.
+4. Untuk database yang sudah ada, jalankan `php app/Database/migrate.php` setelah membuat backup.
+5. Pastikan PHP dapat menulis ke `storage/uploads/` dan `public/assets/avatars/`.
 
-Konfigurasi produksi harus memakai kredensial database unik, HTTPS, dan nilai `.env` yang tidak pernah dikomit.
+Panduan produksi lengkap tersedia di [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md).
+
+## Pemeriksaan
+
+```bash
+find app public -type f -name '*.php' -print0 | xargs -0 -n1 php -l
+php app/Support/check_deploy.php
+```
+
+Jangan commit `.env`, credential, token, file unggahan, dump database, atau log produksi.

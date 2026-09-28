@@ -20,6 +20,7 @@ desktop.ini
 # Generated uploads / avatars
 /public/assets/avatars/*
 !/public/assets/avatars/.gitkeep
+!/public/assets/avatars/.htaccess
 
 # Logs / cache / temp / backups
 *.log
