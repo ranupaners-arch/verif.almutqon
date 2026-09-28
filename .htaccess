@@ -1,0 +1,13 @@
+Options -Indexes
+
+RewriteEngine On
+
+# Lindungi source aplikasi, data runtime, dan metadata repository.
+RewriteRule ^(?:app|storage|handoffs|\.git)(?:/|$) - [F,L,NC]
+RewriteRule ^\.env(?:\.|$) - [F,L,NC]
+
+# Kompatibilitas untuk hosting yang memakai folder repository sebagai
+# document root. Public tetap menjadi lokasi entry point sebenarnya.
+RewriteRule ^public(?:/|$) - [L,NC]
+RewriteRule ^$ public/index.php [L]
+RewriteRule ^(.+)$ public/$1 [L]

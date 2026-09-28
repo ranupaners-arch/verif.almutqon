@@ -13,6 +13,7 @@ desktop.ini
 
 # Runtime uploads (keep directory placeholder)
 /storage/uploads/*
+!/storage/uploads/.gitkeep
 /storage/uploads_legacy_t/*
 !/storage/uploads_legacy_t/.gitkeep
 
