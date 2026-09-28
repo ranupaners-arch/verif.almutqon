@@ -7,7 +7,8 @@ RewriteRule ^(?:app|storage|handoffs|\.git)(?:/|$) - [F,L,NC]
 RewriteRule ^\.env(?:\.|$) - [F,L,NC]
 
 # Kompatibilitas untuk hosting yang memakai folder repository sebagai
-# document root. Public tetap menjadi lokasi entry point sebenarnya.
+# document root. Root index menjadi entry point kanonis.
 RewriteRule ^public(?:/|$) - [L,NC]
-RewriteRule ^$ public/index.php [L]
+RewriteRule ^$ index.php [L]
+RewriteRule ^index\.php$ - [L]
 RewriteRule ^(.+)$ public/$1 [L]

@@ -1,2 +1,2 @@
 <?php
-require dirname(__DIR__) . '/app/Pages/index.php';
+require dirname(__DIR__) . '/index.php';
