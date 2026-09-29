@@ -7,6 +7,8 @@ Dokumen ini adalah handoff pekerjaan. Untuk melanjutkan, gunakan perintah: **`la
 - URL lokal Herd: `http://verif.almutqon.test`
 - Web root yang dipakai: `public/`
 - Konfigurasi lokal ada di `.env` (diabaikan Git; jangan pernah membagikan atau mengomit isinya).
+  - `APP_ENV=development` + `APP_DEBUG=true` untuk lokal. Jika `APP_ENV` kosong, aplikasi menganggap `production` dan menolak `APP_URL` non-HTTPS dengan pesan "Konfigurasi server tidak lengkap".
+  - Pesan error konfigurasi kini menyertakan alasan spesifik saat `APP_ENV` bukan `production` (helper `config_fail()` di `app/Bootstrap.php`); di production tetap generik.
 - Database lokal: `db_almutqon-verif`.
 - Schema awal telah diimpor dari `app/Database/schema.sql`.
 - Folder PDF: `storage/uploads/` (di luar web root).

@@ -7,24 +7,18 @@ $databaseConfig = [];
 foreach ($databaseKeys as $key) {
     $value = getenv($key);
     if ($value === false || trim((string) $value) === '') {
-        error_log($key . ' belum dikonfigurasi.');
-        http_response_code(500);
-        exit('Konfigurasi server tidak lengkap. Silakan hubungi administrator.');
+        config_fail($key . ' belum dikonfigurasi.');
     }
     $databaseConfig[$key] = trim((string) $value);
 }
 
 $dbPasswordValue = getenv('DB_PASSWORD');
 if ($dbPasswordValue === false || (APP_ENV === 'production' && $dbPasswordValue === '')) {
-    error_log('DB_PASSWORD belum dikonfigurasi.');
-    http_response_code(500);
-    exit('Konfigurasi server tidak lengkap. Silakan hubungi administrator.');
+    config_fail('DB_PASSWORD belum dikonfigurasi.');
 }
 
 if (!ctype_digit($databaseConfig['DB_PORT']) || (int) $databaseConfig['DB_PORT'] < 1 || (int) $databaseConfig['DB_PORT'] > 65535) {
-    error_log('DB_PORT tidak valid.');
-    http_response_code(500);
-    exit('Konfigurasi server tidak lengkap. Silakan hubungi administrator.');
+    config_fail('DB_PORT tidak valid.');
 }
 
 $dbHost = $databaseConfig['DB_HOST'];

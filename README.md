@@ -13,7 +13,7 @@ Aplikasi PHP native untuk verifikasi dan pengelolaan berbagai jenis dokumen digi
 ## Menjalankan lokal
 
 1. Arahkan document root web server ke folder `public/`.
-2. Salin `.env.example` menjadi `.env` dan isi konfigurasi lokal.
+2. Salin `.env.example` menjadi `.env`, lalu untuk lokal set `APP_ENV=development`, `APP_DEBUG=true`, dan `APP_URL=http://verif.almutqon.test` (produksi wajib `APP_ENV=production` + `APP_URL` HTTPS).
 3. Impor `app/Database/schema.sql` untuk database baru.
 4. Untuk database yang sudah ada, jalankan `php app/Database/migrate.php` setelah membuat backup.
 5. Pastikan PHP dapat menulis ke `storage/uploads/` dan `public/assets/avatars/`.

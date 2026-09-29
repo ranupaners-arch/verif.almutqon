@@ -16,33 +16,39 @@ if (is_file($envFile)) {
     }
 }
 
+/**
+ * Hentikan request karena konfigurasi server belum lengkap.
+ * Alasan rinci ditampilkan hanya di luar lingkungan production agar
+ * pengembang cepat menemukan variabel yang salah, sementara production
+ * tetap memakai pesan umum (tidak membocorkan detail konfigurasi).
+ */
+function config_fail(string $reason): never
+{
+    error_log($reason);
+    http_response_code(500);
+    $isProduction = strtolower(trim((string) (getenv('APP_ENV') ?: 'production'))) === 'production';
+    exit('Konfigurasi server tidak lengkap. Silakan hubungi administrator.' . ($isProduction ? '' : ' (' . $reason . ')'));
+}
+
 $appEnvironment = strtolower(trim((string) (getenv('APP_ENV') ?: 'production')));
 if (!in_array($appEnvironment, ['production', 'staging', 'development', 'testing'], true)) {
-    error_log('APP_ENV tidak valid.');
-    http_response_code(500);
-    exit('Konfigurasi server tidak lengkap. Silakan hubungi administrator.');
+    config_fail('APP_ENV tidak valid.');
 }
 define('APP_ENV', $appEnvironment);
 define('APP_DEBUG', filter_var(getenv('APP_DEBUG') ?: 'false', FILTER_VALIDATE_BOOL));
 
 $appUrl = rtrim(trim((string) (getenv('APP_URL') ?: '')), '/');
 if ($appUrl === '' || filter_var($appUrl, FILTER_VALIDATE_URL) === false) {
-    error_log('APP_URL kosong atau tidak valid.');
-    http_response_code(500);
-    exit('Konfigurasi server tidak lengkap. Silakan hubungi administrator.');
+    config_fail('APP_URL kosong atau tidak valid.');
 }
 if (APP_ENV === 'production' && !str_starts_with(strtolower($appUrl), 'https://')) {
-    error_log('APP_URL produksi wajib memakai HTTPS.');
-    http_response_code(500);
-    exit('Konfigurasi server tidak lengkap. Silakan hubungi administrator.');
+    config_fail('APP_URL produksi wajib memakai HTTPS.');
 }
 define('APP_URL', $appUrl);
 
 $appSecretKey = getenv('APP_SECRET_KEY');
 if ($appSecretKey === false || strlen($appSecretKey) < 32) {
-    error_log('APP_SECRET_KEY kosong atau terlalu pendek.');
-    http_response_code(500);
-    exit('Konfigurasi server tidak lengkap. Silakan hubungi administrator.');
+    config_fail('APP_SECRET_KEY kosong atau terlalu pendek.');
 }
 define('APP_SECRET_KEY', $appSecretKey);
 define('MAX_UPLOAD_BYTES', 10 * 1024 * 1024);
