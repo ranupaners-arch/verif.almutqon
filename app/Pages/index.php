@@ -57,22 +57,11 @@ if ($error_msg === '' && $token !== '') {
 // Smart back button: Cek apakah user adalah staff yang sedang login
 $is_staff_logged_in = isset($_SESSION['is_staff']) && $_SESSION['is_staff'] === true;
 $back_url = $is_staff_logged_in ? 'dashboard.php' : 'index.php';
+$pageTitleFull = 'AL MUTQON - Validasi Dokumen Digital';
+$extraCss = ['assets/portal.css'];
+$extraJs = ['assets/vendor/html5-qrcode.min.js', 'assets/vendor/sweetalert2.min.js'];
 ?>
-<!DOCTYPE html>
-<html lang="id">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AL MUTQON - Validasi Dokumen Digital</title>
-<link rel="icon" type="image/png" href="assets/favicon.png?v=20260919b">
-    <link rel="shortcut icon" href="assets/favicon.ico?v=20260919b">
-<script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link href="assets/app.css?v=20260926h" rel="stylesheet">
-<link href="assets/portal.css?v=20260925i" rel="stylesheet">
-</head>
-<body>
+<?php include __DIR__ . '/_head.php'; ?>
 
 <?php if (!$is_valid && empty($error_msg)): ?>
 <!-- STATE A: BERANDA (PORTAL PUBLIK) -->
@@ -256,6 +245,40 @@ $back_url = $is_staff_logged_in ? 'dashboard.php' : 'index.php';
 <script>
 let html5QrcodeScanner = null;
 let html5QrCode = null;
+// Kamera dan pemindaian berkas memakai kelas yang berbeda: Html5QrcodeScanner
+// membuka kamera, Html5Qrcode membaca gambar yang diunggah. Keduanya bisa
+// tidak ada, jadi ketersediaan dipisah agar berkas gambar tetap bisa diunggah walau
+// kamera tidak tersedia.
+const cameraAvailable = typeof Html5QrcodeScanner !== 'undefined';
+const imageScanAvailable = typeof Html5Qrcode !== 'undefined';
+
+if (!cameraAvailable) {
+    const reader = document.getElementById('reader');
+    const scanLine = document.querySelector('.scan-line');
+    const emptyTitle = document.querySelector('.scan-empty__title');
+    const fileLabel = document.querySelector('.scan-empty__file');
+    const status = document.getElementById('scan-status');
+
+    if (reader) reader.hidden = true;
+    if (scanLine) scanLine.hidden = true;
+    if (emptyTitle) emptyTitle.textContent = 'Kamera tidak tersedia';
+    if (fileLabel && !imageScanAvailable) fileLabel.hidden = true;
+
+    if (status) {
+        status.textContent = imageScanAvailable
+            ? 'Kamera tidak tersedia di perangkat ini. Kamu tetap bisa memilih gambar QR untuk dibaca, atau verifikasi manual memakai kode/token di tab Verifikasi.'
+            : 'Pemindai QR tidak tersedia. Verifikasi manual memakai kode atau token di tab Verifikasi tetap dapat digunakan.';
+    }
+}
+
+function showQrError() {
+    const message = 'Bukan QR Code dokumen AL MUTQON yang valid.';
+    if (typeof Swal !== 'undefined' && typeof Swal.fire === 'function') {
+        Swal.fire({ icon: 'error', title: 'QR Tidak Dikenali', text: message, confirmButtonColor: '#166534' });
+    } else {
+        alert('QR Tidak Dikenali\n' + message);
+    }
+}
 
 function switchTab(tabName) {
     ['check', 'scan', 'staff'].forEach(t => {
@@ -269,6 +292,7 @@ function switchTab(tabName) {
 }
 
 function startScanner() {
+    if (!cameraAvailable) return;
     if (html5QrcodeScanner) return;
     const statusEl = document.getElementById('scan-status');
     const frame = document.querySelector('.scan-frame');
@@ -306,6 +330,7 @@ function stopScanner() {
 
 function scanFromFile(file) {
     if (!file) return;
+    if (!imageScanAvailable) return;
     if (!html5QrCode) html5QrCode = new Html5Qrcode("reader");
     const statusEl = document.getElementById('scan-status');
     if (statusEl) statusEl.textContent = 'Membaca gambar...';
@@ -327,7 +352,7 @@ function onScanSuccess(decodedText) {
             : 'index.php?token=' + encodeURIComponent(token);
     } else {
         if (statusEl) statusEl.innerText = '';
-        Swal.fire({ icon: 'error', title: 'QR Tidak Dikenali', text: 'Bukan QR Code dokumen AL MUTQON yang valid.', confirmButtonColor: '#166534' });
+        showQrError();
     }
 }
 
@@ -344,6 +369,6 @@ function onScanSuccess(decodedText) {
 })();
 </script>
 <?php endif; ?>
-<script src="assets/nav.js?v=20260926b"></script>
+<script src="assets/nav.js?v=<?= ASSET_VERSION ?>"></script>
 </body>
 </html>

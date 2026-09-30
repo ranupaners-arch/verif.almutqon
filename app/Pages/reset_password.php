@@ -40,18 +40,7 @@ if ($token === '') {
     }
 }
 ?>
-<!DOCTYPE html>
-<html lang="id">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reset Password — AL MUTQON</title>
-<link rel="icon" type="image/png" href="assets/favicon.png?v=20260919b">
-    <link rel="shortcut icon" href="assets/favicon.ico?v=20260919b">
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link href="assets/app.css?v=20260926f" rel="stylesheet">
-</head>
-<body>
+<?php $pageTitleFull = 'Reset Password — AL MUTQON'; include __DIR__ . '/_head.php'; ?>
 <main class="page" style="max-width:440px; margin: 80px auto;">
     <div class="panel">
         <div class="panel__hd" style="text-align:center; border-bottom:none; padding-bottom:0">
@@ -97,6 +86,6 @@ if ($token === '') {
         </div>
     </div>
 </main>
-<script src="assets/nav.js?v=20260926a"></script>
+<script src="assets/nav.js?v=<?= ASSET_VERSION ?>"></script>
 </body>
 </html>

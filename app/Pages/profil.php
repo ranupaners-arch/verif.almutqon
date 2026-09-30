@@ -69,20 +69,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !verify_csrf()) {
 }
 
 $pageTitle = 'Profil Saya';
+$pageTitleFull = null;
 $navActive = 'profil';
 ?>
-<!DOCTYPE html>
-<html lang="id">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Profil Saya - AL MUTQON</title>
-<link rel="icon" type="image/png" href="assets/favicon.png?v=20260919b">
-    <link rel="shortcut icon" href="assets/favicon.ico?v=20260919b">
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link href="assets/app.css?v=20260926g" rel="stylesheet">
-</head>
-<body class="profile-page">
+<?php $bodyClass = 'profile-page'; include __DIR__ . '/_head.php'; ?>
 
 <?php include __DIR__ . '/_sidebar.php'; ?>
 <?php include __DIR__ . '/_masthead.php'; ?>
@@ -202,6 +192,6 @@ document.getElementById('avatar-file-profil').addEventListener('change', functio
     });
 })();
 </script>
-<script src="assets/nav.js?v=20260926a"></script>
+<script src="assets/nav.js?v=<?= ASSET_VERSION ?>"></script>
 </body>
 </html>

@@ -43,13 +43,17 @@ if (PHP_SAPI !== 'cli') {
     }
 }
 
-session_start([
-    'cookie_httponly' => true,
-    'cookie_samesite' => 'Strict',
-    'cookie_secure' => APP_ENV === 'production' || $requestIsHttps,
-    'use_strict_mode' => true,
-    'gc_maxlifetime' => 1800,
-]);
+// Dijaga karena Bootstrap bisa ikut termuat dua kali bila sebuah halaman
+// menyertakan partial yangawedelta punya dependensi Bootstrap sendiri.
+if (session_status() !== PHP_SESSION_ACTIVE) {
+    session_start([
+        'cookie_httponly' => true,
+        'cookie_samesite' => 'Strict',
+        'cookie_secure' => APP_ENV === 'production' || $requestIsHttps,
+        'use_strict_mode' => true,
+        'gc_maxlifetime' => 1800,
+    ]);
+}
 
 require_once __DIR__ . '/Config/database.php';
 

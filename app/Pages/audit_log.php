@@ -12,6 +12,7 @@ if (!in_array($role, ['admin', 'direktur'], true)) {
 }
 
 $pageTitle = 'Jejak Audit';
+$pageTitleFull = null;
 $navActive = 'audit_log';
 $q = trim((string) ($_GET['q'] ?? ''));
 $action = trim((string) ($_GET['action'] ?? ''));
@@ -49,16 +50,7 @@ $query = static function (array $extra = []) use ($q, $action): string {
     return http_build_query($values);
 };
 ?>
-<!DOCTYPE html>
-<html lang="id">
-<head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Jejak Audit - AL MUTQON</title>
-<link rel="icon" type="image/png" href="assets/favicon.png?v=20260919b">
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link href="assets/app.css?v=20260926k" rel="stylesheet">
-</head>
-<body>
+<?php include __DIR__ . '/_head.php'; ?>
 <?php include __DIR__ . '/_sidebar.php'; ?>
 <?php include __DIR__ . '/_masthead.php'; ?>
 <main class="page page--wide audit-page">
@@ -124,5 +116,5 @@ $query = static function (array $extra = []) use ($q, $action): string {
     form.addEventListener('submit', (event) => { event.preventDefault(); window.clearTimeout(timer); search(); });
 })();
 </script>
-<script src="assets/nav.js?v=20260926a"></script>
+<script src="assets/nav.js?v=<?= ASSET_VERSION ?>"></script>
 </body></html>

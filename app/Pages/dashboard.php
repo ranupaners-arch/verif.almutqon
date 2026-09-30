@@ -1,6 +1,6 @@
 <?php
 require dirname(__DIR__) . '/Bootstrap.php';
-require dirname(__DIR__) . '/Http/dokumen_actions.php';
+require_once dirname(__DIR__) . '/Http/dokumen_actions.php';
 
 if (!isset($_SESSION['is_staff'])) { header("Location: staff.php"); exit; }
 
@@ -32,6 +32,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
 
 // Shell variables
 $pageTitle = 'Dashboard';
+$pageTitleFull = null;
 $navActive = 'dashboard';
 
 // 2. HANDLE BUAT DOKUMEN BARU (TANPA PDF)
@@ -240,23 +241,9 @@ if ($staff_role === 'direktur') {
 // Shell variables
 $pageTitle = 'Dashboard';
 $navActive = 'dashboard';
-$extraHead = '<script src="assets/vendor/qr-code-styling.js"></script>';
+$extraJs = ['assets/vendor/qr-code-styling.js'];
 ?>
-<!DOCTYPE html>
-<html lang="id">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Dashboard - AL MUTQON</title>
-<link rel="icon" type="image/png" href="assets/favicon.png?v=20260919b">
-    <link rel="shortcut icon" href="assets/favicon.ico?v=20260919b">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link href="assets/app.css?v=20260926g" rel="stylesheet">
-<?= $extraHead ?>
-</head>
-<body>
+<?php include __DIR__ . '/_head.php'; ?>
 
 <?php include __DIR__ . '/_sidebar.php'; ?>
 <?php include __DIR__ . '/_masthead.php'; ?>
@@ -610,6 +597,6 @@ function downloadQR() {
     });
 })();
 </script>
-<script src="assets/nav.js?v=20260926a"></script>
+<script src="assets/nav.js?v=<?= ASSET_VERSION ?>"></script>
 </body>
 </html>
