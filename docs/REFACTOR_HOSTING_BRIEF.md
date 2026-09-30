@@ -1,8 +1,8 @@
-# BRIEF — Fase 4 (Frontend consolidation) untuk agent `pi`
+# BRIEF — Fase 4 (Frontend consolidation) untuk agent eksekusi
 
 Proyek: `verif-almutqon` (root kerja = repo ini). Baca `AGENTS.md` di root — itu aturan wajib.
 
-##-spaceAturan paling penting
+## Aturan paling penting
 - Kamu **hanya** mengerjakan 4A, 4B, 4C, 4D di bawah. Tidak ada task lain.
 - **Jangan** menyentuh: `app/Bootstrap.php`, `app/Config/`, `app/Http/`, `app/Support/`, `app/Database/`, `.htaccess` mana pun, `.env`, `storage/`, `public/assets/avatars/`.
 - **Jangan** `git add`, `git commit`, atau `git push`.
@@ -14,7 +14,7 @@ Proyek: `verif-almutqon` (root kerja = repo ini). Baca `AGENTS.md` di root — i
 ## Konteks
 - `app/Pages/*.php` adalah halaman. Masing-masing punya blok `<head>` sendiri yang nyaris identik (duplikat).
 - Semua aset diambil dengan path relatif `assets/...` (JANGAN diubah jadi absolut).
-- `ASSET_VERSION` **sudah ada** sebagai konstanta, shaming Defined di `app/Config/app.php`. Pakai `<?= ASSET_VERSION ?>`.
+- `ASSET_VERSION` **sudah ada** sebagai konstanta, sudah didefinisikan di `app/Config/app.php`. Pakai `<?= ASSET_VERSION ?>`.
 - Vendor JS yang akan di-self-host: `public/assets/vendor/`. Font: `public/assets/fonts/`.
 - Pola self-host font sudah berhasil dipakai di repo ini untuk Material Symbols — ikuti pola yang sama (lihat `@font-face` untuk `material-symbols-rounded` di `public/assets/app.css`).
 
@@ -90,12 +90,12 @@ Lalu refactor **9 halaman** ini memakai `include __DIR__ . '/_head.php';` dan ha
 
 Preservasi per halaman:
 - **Hanya `index.php`** memakai `portal.css` → lewat `$extraCss`.
-- **Hanya `dashboard.php`** memakai `assets/vendor/qr-code-styling.js` → lewat `$extraJs`. Tapi `dashboard.php` sudah punya variabel `$extraHead` yang dipakai untuk hal ini, dan `_masthead.php`/partial lain mungkin memakainya. **Baca `dashboard.php` dan `_masthead.php` dulu**; kalau `$extraHead` juga dipakai untuk hal lain, tetap暫 pakai `$extraHead` dan cukup pastikan isinya ikut ter-render. Pilih yang paling tidak berisiko.
+- **Hanya `dashboard.php`** memakai `assets/vendor/qr-code-styling.js` → lewat `$extraJs`. Tapi `dashboard.php` sudah punya variabel `$extraHead` yang dipakai untuk hal ini, dan `_masthead.php`/partial lain mungkin memakainya. **Baca `dashboard.php` dan `_masthead.php` dulu**; kalau `$extraHead` juga dipakai untuk hal lain, tetap pakai `$extraHead` dan cukup pastikan isinya ikut ter-render. Pilih yang paling tidak berisiko.
 - **Hanya `index.php`** punya dua `<script>` CDN — setelah 4A keduanya sudah lokal, jadi masukkan keduanya ke `$extraJs`.
 - **Hanya `index.php`** yang punya `<script src="assets/nav.js">` di akhir `<body>`; halaman staff juga memakainya. **Biarkan tag `nav.js` di akhir body apa adanya** — jangan dipindah ke `_head.php`.
 - `reset_password.php` sebelumnya TIDAK memuat Inter, `lupa_password.php`/`index.php` tidak memuat weight 400. **Setelah semua font lokal, ini otomatis seragam** — tidak perlu dipSpecial. Jangan Fameholders|m budgeting attempts untuk meniru perbedaan itu.
 
-Kalau saatengerja页面 kamu ragu soal pemindahan `<head>` di suatu halaman → **biarkan `<head>` halaman itu apa adanya** dan lapor. Gagal separuh lebih baik daripada merusak semua.
+Kalau saat mengerjakan kamu ragu soal pemindahan `<head>` di suatu halaman → **biarkan `<head>` halaman itu apa adanya** dan lapor. Gagal separuh lebih baik daripada merusak semua.
 
 ---
 

@@ -1,0 +1,11 @@
+<IfModule mod_authz_core.c>
+    # Blokir akses web ke direktori ini. Tidak bergantung pada mod_rewrite,
+    # jadi tetap berlaku di hosting yang tidak mengaktifkan rewrite.
+    Require all denied
+</IfModule>
+<IfModule !mod_authz_core.c>
+    <IfModule mod_access_compat.c>
+        Order allow,deny
+        Deny from all
+    </IfModule>
+</IfModule>

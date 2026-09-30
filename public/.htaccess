@@ -1,7 +1,24 @@
-Options -Indexes
+Options -Indexes -ExecCGI
 
 <FilesMatch "^\.">
-    Require all denied
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Order allow,deny
+        Deny from all
+    </IfModule>
+</FilesMatch>
+
+# Cegah berkas pendukung development & dump database ikut terunduh.
+<FilesMatch "\.(sql|bak|log|ini|example|dist|md)$">
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Order allow,deny
+        Deny from all
+    </IfModule>
 </FilesMatch>
 
 <IfModule mod_headers.c>

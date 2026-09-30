@@ -5,6 +5,7 @@ declare(strict_types=1);
  * app/Bootstrap.php — titik masuk tunggal aplikasi.
  *
  * Urutan pemuatan penting:
+ *   0. php_version  penjaga versi PHP, harus paling awal
  *   1. BASE_PATH   lokasi proyek, dibutuhkan semua file lain
  *   2. Config      env -> app (validasi) -> paths
  *   3. Handler     error/exception handler, lihat app/Support/errors.php
@@ -15,6 +16,8 @@ declare(strict_types=1);
  * File ini sengaja tipis: menambah tanggung jawab baru sebaiknya dibuat
  * modul di app/Config atau app/Support, bukan ditumpuk di sini.
  */
+
+require_once __DIR__ . '/Config/php_version.php';
 
 if (!defined('BASE_PATH')) {
     define('BASE_PATH', dirname(__DIR__));

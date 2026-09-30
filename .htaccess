@@ -1,12 +1,26 @@
-Options -Indexes
+Options -Indexes -ExecCGI
 
-RewriteEngine On
+# Blokir berkas sensitif. <FilesMatch> tidak memerlukan mod_rewrite, sehingga
+# aturan ini tetap berlaku di hosting yang rewrite-nya dinonaktifkan.
+# app/, storage/, docs/, handoffs/ dilindungi oleh .htaccess di masing-masing direktori.
+<FilesMatch "(^\.env)|(\.(sql|bak|log|ini|example|dist)$)|(^AGENTS\.md$)|(^README\.md$)|(^CATATAN\.md$)|(^LAPORAN\.md$)|(^CHANGELOG_FIXES\.md$)|(^composer\.(json|lock)$)">
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Order allow,deny
+        Deny from all
+    </IfModule>
+</FilesMatch>
 
 # Fallback untuk hosting yang belum dapat mengarahkan document root ke public/.
 # Produksi tetap disarankan memakai public/ sebagai satu-satunya document root.
-RewriteRule ^(?:app|storage|docs|handoffs|\.git)(?:/|$) - [F,L,NC]
-RewriteRule ^(?:\.env(?:\.|$)|AGENTS\.md$|README\.md$|CATATAN\.md$|LAPORAN\.md$|CHANGELOG_FIXES\.md$) - [F,L,NC]
-
-RewriteRule ^public(?:/|$) - [L,NC]
-RewriteRule ^(?:index\.php)?$ public/index.php [L]
-RewriteRule ^(.+)$ public/$1 [L]
+# Seluruh aturan dibungkus <IfModule> supaya tidak menjadi 500 di hosting tanpa
+# mod_rewrite; tanpa rewrite, file PHP di root (/index.php) tetap bisa dipakai.
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteRule ^(?:app|storage|docs|handoffs)(?:/|$) - [F,L,NC]
+    RewriteRule ^public(?:/|$) - [L,NC]
+    RewriteRule ^(?:index\.php)?$ public/index.php [L]
+    RewriteRule ^(.+)$ public/$1 [L]
+</IfModule>

@@ -85,7 +85,8 @@ if (!function_exists('app_error_page')) {
     function app_error_page(string $context = ''): void
     {
         if (PHP_SAPI === 'cli') {
-            return;
+            fwrite(STDERR, "Fatal: " . $context . PHP_EOL);
+            exit(1);
         }
         if (!headers_sent()) {
             http_response_code(500);
