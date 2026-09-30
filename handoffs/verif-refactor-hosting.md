@@ -23,6 +23,7 @@ Refactor agar rapi + siap deploy ke shared hosting Indonesia. **Tidak mengubah U
 - [x] **Fase 4** — `_head.php`, aset lokal, satu cache-buster (dikerjakan `codex`, direview).
 - [x] **Fase 5** — `app/Support/jenis_dokumen.php`.
 - [x] **Fase 6** — `docs/DEPLOYMENT.md` ditulis ulang, changelog #9.
+- [x] **Fix #10** — `rekap_nomor.php` 500 (`$pageTitle` hilang), ketahuan hanya di nginx+FPM.
 
 Semua tercatat di `docs/CHANGELOG_FIXES.md` **Fix #9**.
 
@@ -30,11 +31,20 @@ Semua tercatat di `docs/CHANGELOG_FIXES.md` **Fix #9**.
 Commit `d16fee5` = titik balik sebelum refactor. Tujuh commit refactor menyusul.
 `php -l` 66/66 bersih; 10 halaman render dengan judul asli; check_deploy 25 lolos.
 
+## Lingkungan dev (temuan baru, sudah diverifikasi)
+- `/Users/mac/Herd` di-**park** Herd, jadi setiap subfoldernya jadi `*.test`.
+  Project ini sudah terjangkau di **`http://verif.almutqon.test`** tanpa setup tambahan.
+- `almutqon.test` menunjuk project LAIN (`/Users/mac/Herd/almutqon`) dan balas 500 karena DB-nya tidak konek. Bukan project ini.
+- Symlink leftover `amoned.verif.almutqon` sudah dihapus (project-nya memang sudah dihapus user). Sisa 3 symlink rusak lain (`belajar-react-backend`, `react`, `verif-almt`) belum disentuh.
+- **`.htaccess` tidak berlaku di nginx.** Proteksi `app/ storage/ docs/ handoffs/` hanya jalan di Apache. Di Herd, `try_files` jatuh ke `index.php` sehingga `.env`/`schema.sql`/log **tidak bocor** — tapi itu sifat kebetulan, bukan proteksi. Untuk hosting sungguhan tetap pakai Opsi A (docroot = `public/`).
+
 ## Yang belum / perlu dilakukan manusia
 1. **Belum diuji di Apache sungguhan.** `.htaccess` hanya bisa dibuktikan di server ber-Apache; `php -S` mengabaikannya. Verifikasi lewat `diagnosa.php` setelah upload.
 2. **`.env` lokal memakai `DB_PORT=3306`, sedangkan MySQL lokal berjalan di 3307.** Semua pengujian memakai `DB_PORT=3307` sebagai environment override. `parse_ini_file` lama tidak bisa menangani override ini.
 3. **Satu record uji ada di database lokal**: `dokumen id=3, no_surat=INV/1` dibuat saat menguji `jenis=invoice`. Belum dihapus — penghapusan data butuh izin eksplisit.
 4. **Belum ada `git push`.** Deploy ke hosting tetap manual lewat panel.
+5. **Password akun admin lokal sudah diganti** ke `[REDACTED]` atas izin user. Hash lama: `/tmp/nip2690000001.hash.lama`.
+6. **Jangan-pull-and-push tanpa cek:** commit `a2a60ef` (Fix #10) hanya terverifikasi di dev. Uji ulang di staging sebelum production.
 
 ## Jangan lakukan
 - Jangan ubah URL, query string, atau teks yang terlihat. Judul 4 halaman pernah berubah saat refactor dan harus dikembalikan persis.
