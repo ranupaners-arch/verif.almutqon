@@ -43,7 +43,7 @@ Commit `d16fee5` = titik balik sebelum refactor. Tujuh commit refactor menyusul.
 2. **`.env` lokal memakai `DB_PORT=3306`, sedangkan MySQL lokal berjalan di 3307.** Semua pengujian memakai `DB_PORT=3307` sebagai environment override. `parse_ini_file` lama tidak bisa menangani override ini.
 3. **Satu record uji ada di database lokal**: `dokumen id=3, no_surat=INV/1` dibuat saat menguji `jenis=invoice`. Belum dihapus — penghapusan data butuh izin eksplisit.
 4. **Belum ada `git push`.** Deploy ke hosting tetap manual lewat panel.
-5. **Password akun admin lokal sudah diganti** ke `[REDACTED]` atas izin user. Hash lama: `/tmp/nip2690000001.hash.lama`.
+5. **Password akun admin lokal sudah diganti** atas izin user. Nilai disengaja tidak dicatat di sini — ambil dari owner bila perlu. Hash lama: `/tmp/nip2690000001.hash.lama`.
 6. **Jangan-pull-and-push tanpa cek:** commit `a2a60ef` (Fix #10) hanya terverifikasi di dev. Uji ulang di staging sebelum production.
 
 ## Jangan lakukan
