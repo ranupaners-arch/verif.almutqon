@@ -72,9 +72,9 @@ if ($action === 'create') {
     $penerima = trim((string) ($input['penerima'] ?? ''));
     $tanggal = trim((string) ($input['tanggal_dokumen'] ?? ''));
     $jabatanTtd = trim((string) ($input['jabatan_ttd'] ?? $input['jabatan'] ?? ''));
-    $jenis = strtolower(trim((string) ($input['jenis'] ?? 'dokumen')));
-    if (!in_array($jenis, ['dokumen', 'invoice'], true)) {
-        api_respond(400, ['success' => false, 'message' => 'Jenis tidak dikenali (dokumen|invoice).']);
+    $jenis = jenis_dokumen_from_input($input['jenis'] ?? null);
+    if ($jenis === null) {
+        api_respond(400, ['success' => false, 'message' => 'Jenis tidak dikenali (' . implode('|', JENIS_DOKUMEN) . ').']);
     }
     $penandatangan = trim((string) ($input['penandatangan'] ?? ''));
     if ($penandatangan === '') {
@@ -147,7 +147,7 @@ if ($action === 'create') {
 
         // Invoice/struk tanpa nomor urut (tak masuk hitungan & rekap penomoran).
         $nomorUrut = null;
-        if ($jenis === 'dokumen') {
+        if (jenis_dokumen_bernomor($jenis)) {
             if (preg_match('/^(\d+)/', $noSurat, $m)) {
                 $nomorUrut = (int) $m[1];
             } else {

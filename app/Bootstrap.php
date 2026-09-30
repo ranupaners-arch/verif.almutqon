@@ -61,6 +61,7 @@ require_once __DIR__ . '/Support/security.php';
 require_once __DIR__ . '/Support/account.php';
 require_once __DIR__ . '/Support/rate_limit.php';
 require_once __DIR__ . '/Support/documents.php';
+require_once __DIR__ . '/Support/jenis_dokumen.php';
 require_once __DIR__ . '/Support/auth.php';
 require_once __DIR__ . '/Support/mail.php';
 require_once __DIR__ . '/Support/format.php';
