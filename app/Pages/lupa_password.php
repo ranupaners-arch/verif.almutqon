@@ -4,7 +4,7 @@ require dirname(__DIR__) . '/Bootstrap.php';
 
 $kirim_ok = false;
 $error = '';
-$mailEnabled = filter_var(getenv('MAIL_ENABLED') ?: 'false', FILTER_VALIDATE_BOOL);
+$mailEnabled = filter_var(env_get('MAIL_ENABLED', 'false'), FILTER_VALIDATE_BOOL);
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $clientIp = (string) ($_SERVER['REMOTE_ADDR'] ?? 'unknown');

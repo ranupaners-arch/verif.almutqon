@@ -2,66 +2,10 @@
 declare(strict_types=1);
 
 define('BASE_PATH', dirname(__DIR__));
-define('STORAGE_PATH', BASE_PATH . '/storage');
 
-$envFile = BASE_PATH . '/.env';
-if (is_file($envFile)) {
-    $environment = parse_ini_file($envFile, false, INI_SCANNER_RAW);
-    if (is_array($environment)) {
-        foreach ($environment as $key => $value) {
-            if (getenv((string) $key) === false) {
-                putenv($key . '=' . $value);
-            }
-        }
-    }
-}
-
-/**
- * Hentikan request karena konfigurasi server belum lengkap.
- * Alasan rinci ditampilkan hanya di luar lingkungan production agar
- * pengembang cepat menemukan variabel yang salah, sementara production
- * tetap memakai pesan umum (tidak membocorkan detail konfigurasi).
- */
-function config_fail(string $reason): never
-{
-    error_log($reason);
-    http_response_code(500);
-    $isProduction = strtolower(trim((string) (getenv('APP_ENV') ?: 'production'))) === 'production';
-    exit('Konfigurasi server tidak lengkap. Silakan hubungi administrator.' . ($isProduction ? '' : ' (' . $reason . ')'));
-}
-
-$appEnvironment = strtolower(trim((string) (getenv('APP_ENV') ?: 'production')));
-if (!in_array($appEnvironment, ['production', 'staging', 'development', 'testing'], true)) {
-    config_fail('APP_ENV tidak valid.');
-}
-define('APP_ENV', $appEnvironment);
-define('APP_DEBUG', filter_var(getenv('APP_DEBUG') ?: 'false', FILTER_VALIDATE_BOOL));
-
-$appUrl = rtrim(trim((string) (getenv('APP_URL') ?: '')), '/');
-if ($appUrl === '' || filter_var($appUrl, FILTER_VALIDATE_URL) === false) {
-    config_fail('APP_URL kosong atau tidak valid.');
-}
-if (APP_ENV === 'production' && !str_starts_with(strtolower($appUrl), 'https://')) {
-    config_fail('APP_URL produksi wajib memakai HTTPS.');
-}
-define('APP_URL', $appUrl);
-
-$appSecretKey = getenv('APP_SECRET_KEY');
-if ($appSecretKey === false || strlen($appSecretKey) < 32) {
-    config_fail('APP_SECRET_KEY kosong atau terlalu pendek.');
-}
-define('APP_SECRET_KEY', $appSecretKey);
-define('MAX_UPLOAD_BYTES', 10 * 1024 * 1024);
-define('UPLOAD_RATE_WINDOW_SECONDS', 600);
-define('MAX_UPLOAD_ATTEMPTS', 15);
-define('API_RATE_WINDOW_SECONDS', 60);
-define('MAX_API_ATTEMPTS', 60);
-define('VERIFY_RATE_WINDOW_SECONDS', 60);
-define('MAX_VERIFY_ATTEMPTS', 30);
-define('LOGIN_RATE_WINDOW_SECONDS', 900);
-define('MAX_LOGIN_ATTEMPTS', 5);
-define('RESET_RATE_WINDOW_SECONDS', 900);
-define('MAX_RESET_ATTEMPTS', 5);
+// Konfigurasi dimuat berurutan: env (pembacaan) -> app (validasi) -> paths (lokasi).
+require_once __DIR__ . '/Config/app.php';
+require_once __DIR__ . '/Config/paths.php';
 
 $requestIsHttps = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off');
 
@@ -170,7 +114,7 @@ function resolve_pdf_path(?string $pdf_path): ?string
     }
 
     $allowedBases = [];
-    foreach ([STORAGE_PATH . '/uploads', BASE_PATH . '/public'] as $base) {
+    foreach ([UPLOAD_DIR, PUBLIC_PATH] as $base) {
         $real = realpath($base);
         if ($real !== false) {
             $allowedBases[] = $real;
@@ -179,15 +123,15 @@ function resolve_pdf_path(?string $pdf_path): ?string
 
     $candidates = [];
     $basename = basename($raw);
-    $candidates[] = STORAGE_PATH . '/uploads/' . $basename;
-    $candidates[] = BASE_PATH . '/public/uploads/' . $basename;
-    $candidates[] = BASE_PATH . '/public/' . $basename;
+    $candidates[] = UPLOAD_DIR . '/' . $basename;
+    $candidates[] = PUBLIC_PATH . '/uploads/' . $basename;
+    $candidates[] = PUBLIC_PATH . '/' . $basename;
     if ($basename !== $raw) {
         $candidates[] = STORAGE_PATH . '/' . $raw;
-        $candidates[] = BASE_PATH . '/public/' . $raw;
+        $candidates[] = PUBLIC_PATH . '/' . $raw;
         $candidates[] = BASE_PATH . '/' . $raw;
-        $candidates[] = STORAGE_PATH . '/uploads/' . $raw;
-        $candidates[] = BASE_PATH . '/public/uploads/' . $raw;
+        $candidates[] = UPLOAD_DIR . '/' . $raw;
+        $candidates[] = PUBLIC_PATH . '/uploads/' . $raw;
     }
 
     foreach ($candidates as $candidate) {
@@ -260,12 +204,12 @@ function staff_mark_reset_used(PDO $pdo, string $token): void
  */
 function send_mail(string $to, string $subject, string $body): array
 {
-    if (!filter_var(getenv('MAIL_ENABLED') ?: 'false', FILTER_VALIDATE_BOOL)) {
+    if (!filter_var(env_get('MAIL_ENABLED', 'false'), FILTER_VALIDATE_BOOL)) {
         return ['ok' => false, 'error' => 'Mail transport dinonaktifkan'];
     }
 
-    $from = trim((string) (getenv('MAIL_FROM') ?: ''));
-    $fromName = trim((string) (getenv('MAIL_FROM_NAME') ?: 'AL MUTQON Verification'));
+    $from = trim((string) (env_get('MAIL_FROM', '')));
+    $fromName = trim((string) (env_get('MAIL_FROM_NAME', 'AL MUTQON Verification')));
     if (!filter_var($to, FILTER_VALIDATE_EMAIL) || !filter_var($from, FILTER_VALIDATE_EMAIL)) {
         return ['ok' => false, 'error' => 'Alamat email tidak valid'];
     }

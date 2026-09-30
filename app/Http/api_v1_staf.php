@@ -166,7 +166,7 @@ if ($action === 'update_profile') {
         if ((int) ($upload['error'] ?? UPLOAD_ERR_OK) !== UPLOAD_ERR_OK || (int) $upload['size'] > 1024 * 1024 || !isset($mimeMap[$mime])) {
             api_respond(400, ['success' => false, 'message' => 'Avatar tidak valid (JPG/PNG/WebP, maksimal 1 MB).']);
         }
-        $avatarDir = dirname(__DIR__, 2) . '/public/assets/avatars';
+        $avatarDir = AVATAR_DIR;
         if (!is_dir($avatarDir) && !mkdir($avatarDir, 0755, true)) {
             api_respond(500, ['success' => false, 'message' => 'Penyimpanan avatar tidak tersedia.']);
         }
@@ -187,7 +187,7 @@ if ($action === 'update_profile') {
         api_respond(500, ['success' => false, 'message' => 'Gagal memperbarui profil staff.']);
     }
     if ($newAvatar !== null && !empty($ada['avatar'])) {
-        $old = dirname(__DIR__, 2) . '/public/assets/avatars/' . basename((string) $ada['avatar']);
+        $old = AVATAR_DIR . '/' . basename((string) $ada['avatar']);
         if (is_file($old)) @unlink($old);
     }
     $stmt = $pdo->prepare('SELECT * FROM staff WHERE id = ? LIMIT 1');

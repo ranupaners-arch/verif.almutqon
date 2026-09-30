@@ -25,7 +25,7 @@ $pdo->exec("CREATE TABLE IF NOT EXISTS system_actors (
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
-$actorKey = trim((string) (getenv('VERIF_API_SYSTEM_ACTOR_KEY') ?: ''));
+$actorKey = trim((string) (env_get('VERIF_API_SYSTEM_ACTOR_KEY', '')));
 if ($actorKey === '') {
     fwrite(STDERR, "VERIF_API_SYSTEM_ACTOR_KEY belum dikonfigurasi.\n");
     exit(1);

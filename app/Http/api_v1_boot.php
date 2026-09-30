@@ -65,7 +65,7 @@ function api_ip(): string
 // System actor khusus API: bukan staff, tidak memiliki NIP, jabatan, role, atau login.
 function api_service_account(PDO $pdo): array
 {
-    $actorKey = trim((string) (getenv('VERIF_API_SYSTEM_ACTOR_KEY') ?: ''));
+    $actorKey = trim((string) (env_get('VERIF_API_SYSTEM_ACTOR_KEY', '')));
     if ($actorKey === '') {
         error_log('VERIF_API_SYSTEM_ACTOR_KEY belum dikonfigurasi.');
         api_respond(500, ['success' => false, 'message' => 'Layanan verifikasi belum siap.']);
@@ -84,7 +84,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     api_respond(405, ['success' => false, 'message' => 'Metode tidak diizinkan.']);
 }
 
-$expected = (string) (getenv('VERIF_API_TOKEN') ?: '');
+$expected = (string) (env_get('VERIF_API_TOKEN', ''));
 if (strlen($expected) < 32 || !hash_equals($expected, api_bearer())) {
     api_respond(401, ['success' => false, 'message' => 'Tidak terautentikasi.']);
 }

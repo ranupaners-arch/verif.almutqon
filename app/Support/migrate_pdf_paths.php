@@ -20,7 +20,7 @@ require_once dirname(__DIR__) . '/Bootstrap.php';
 
 $dryRun = in_array('--dry-run', $argv, true);
 
-if (!is_dir(STORAGE_PATH . '/uploads') && !mkdir(STORAGE_PATH . '/uploads', 0755, true)) {
+if (!is_dir(UPLOAD_DIR) && !mkdir(UPLOAD_DIR, 0755, true)) {
     fwrite(STDERR, "Gagal membuat folder storage/uploads.\n");
     exit(1);
 }
@@ -52,7 +52,7 @@ foreach ($rows as $row) {
     }
 
     $locatedReal = realpath($located);
-    $uploadsReal = realpath(STORAGE_PATH . '/uploads');
+    $uploadsReal = realpath(UPLOAD_DIR);
 
     if ($locatedReal !== false && $uploadsReal !== false && str_starts_with($locatedReal, $uploadsReal . '/')) {
         $canonicalized++;

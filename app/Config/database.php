@@ -5,15 +5,15 @@ declare(strict_types=1);
 $databaseKeys = ['DB_HOST', 'DB_PORT', 'DB_DATABASE', 'DB_USERNAME'];
 $databaseConfig = [];
 foreach ($databaseKeys as $key) {
-    $value = getenv($key);
+    $value = env_get($key, '');
     if ($value === false || trim((string) $value) === '') {
         config_fail($key . ' belum dikonfigurasi.');
     }
     $databaseConfig[$key] = trim((string) $value);
 }
 
-$dbPasswordValue = getenv('DB_PASSWORD');
-if ($dbPasswordValue === false || (APP_ENV === 'production' && $dbPasswordValue === '')) {
+$dbPasswordValue = env_get('DB_PASSWORD', '');
+if (APP_ENV === 'production' && $dbPasswordValue === '') {
     config_fail('DB_PASSWORD belum dikonfigurasi.');
 }
 

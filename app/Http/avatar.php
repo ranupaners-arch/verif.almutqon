@@ -27,7 +27,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST' || !verify_csrf()) {
     exit;
 }
 
-$dir = BASE_PATH . '/public/assets/avatars';
+$dir = AVATAR_DIR;
 
 $aksi = (string) ($_POST['aksi'] ?? 'simpan');
 if ($aksi === 'hapus') {
