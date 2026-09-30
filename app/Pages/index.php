@@ -370,5 +370,4 @@ function onScanSuccess(decodedText) {
 </script>
 <?php endif; ?>
 <script src="assets/nav.js?v=<?= ASSET_VERSION ?>"></script>
-</body>
-</html>
+<?php include __DIR__ . '/_foot.php'; ?>

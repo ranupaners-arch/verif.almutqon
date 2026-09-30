@@ -24,7 +24,7 @@
             <h3 class="doc__title"><?= htmlspecialchars($doc['no_surat']) ?></h3>
             <p class="doc__sub"><?= htmlspecialchars($doc['perihal']) ?></p>
         </div>
-        <div class="row" style="gap:6px">
+        <div class="row u-gap-6">
             <a href="index.php?token=<?= htmlspecialchars($doc['token']) ?>" target="_blank" class="btn btn-soft btn-sm">Lihat</a>
             <?php if (empty($noUploadPdf)): ?>
             <button type="button" class="btn btn-primary btn-sm" onclick="openUploadModal(<?= (int) $doc['id'] ?>, <?= htmlspecialchars((string) json_encode($doc['no_surat']), ENT_QUOTES) ?>)">

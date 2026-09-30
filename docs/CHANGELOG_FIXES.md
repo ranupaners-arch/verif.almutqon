@@ -3,6 +3,21 @@ Entri terbaru di paling atas. Ditulis sesuai aturan adaCODE (perbaikan terverifi
 
 ---
 
+### Fix #11 — Konsistensi struktur: partial `_foot.php`, CSS mati dibuang, 60 inline style jadi class
+Gejala: 10 halaman masing-masing menulis `</body></html>` sendiri, 109 atribut `style=""` bertebaran di PHP, dan `app.css` memuat 11 aturan `.profile-settings*` yang nol pemakaian serta 4 aturan `.profile-card` yang sudah ditimpa penuh. Perubahan CSS satu halaman liable merusak halaman lain.
+
+| Aspek | Rincian |
+|---|---|
+| Tanggal | 2026-09-30 |
+| File | `app/Pages/_foot.php` (baru), 10 halaman di `app/Pages/`, `app/Pages/_masthead.php`, `public/assets/app.css` |
+| Masalah | Penutup dokumen duplikat 10×; nilai gaya melekat pada elemen, bukan di CSS; aturan CSS mati dan bertumpuk; 3 kelompok aturan paralel (`.profile-settings`, `.profile-card`, `.profile-page`) menetapkan nilai sama untuk elemen yang sama |
+| Akar | Nilai gaya ditulis inline saat desain, lalu ditimpa aturan baru saat revisi; tidak pernah dikumpulkan balik ke satu sumber. Aturan mati tertinggal karena tidak ada proses yang memeriksa selector terhadap pemakaian nyata |
+| Fix | `_foot.php` memegang `</body></html>` (urutan `nav.js` → `</body>` → `</html>` dipertahankan); `_masthead.php` dapat fallback `$pageTitle ?? 'AL MUTQON'`; 11 aturan `.profile-settings*` + 4 aturan `.profile-card` yang terbukti mati/tertimpa dihapus; 19 class utilitas `u-*` dibuat; 60 inline style (dari 65 duplikat) dipindah ke CSS |
+| Verifikasi | **672 elemen dibandingkan computed style sebelum/sesudah di 8 halaman: 0 nilai beda.** 14 dari 16 screenshot (8 halaman × 2 lebar) identik piksel-perfect; 2 sisanya `audit_log` berbeda hanya karena row `activity_log` bertambah dari login uji. Teks pengguna identik di 9 dari 10 halaman. 10 halaman HTTP 200 via nginx + PHP-FPM, 0 error baru di log, `php -l` 68/68. `!important` tetap 5. Tiap class `u-*` terbukti terpakai — nol CSS yatim |
+| Pelajaran | Codex menolak menjalankan browser dan menyerahkan verifikasi ke manusia; buktinya harus dari perbandingan state, bukan klaim. Kunci perbandingan berbasis class baru sia-sia (class belum ada di "sebelum") — kuncinya harus indeks DOM. Halaman berpaginasi akan selalu berbeda antara dua capture karena datanya tumbuh |
+| Log Keyword | _foot.php, inline style, u-* utility, profile-settings dead CSS, computed style diff, pixel diff |
+| Deploy | BELUM — belum dipush |
+
 ### Fix #10 — Halaman Rekap Nomor 500: `$pageTitle` hilang setelah konsolidasi `_head.php`
 Gejala: `/rekap_nomor.php` balas HTTP 500 dengan body kosong. Halaman lain normal. Baru muncul saat diuji lewat nginx + PHP-FPM; di `php -S` halaman ini selalu lolos.
 

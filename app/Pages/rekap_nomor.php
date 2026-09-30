@@ -50,7 +50,7 @@ $navActive = 'rekap_nomor';
 <?php include __DIR__ . '/_masthead.php'; ?>
 
 <main class="page page--wide">
-    <div class="grid3" style="margin-bottom:22px">
+    <div class="grid3 u-mb-22">
         <div class="stat">
             <span class="stat__body">
                 <span class="stat__value">#<?= str_pad((string) $max, 3, '0', STR_PAD_LEFT) ?></span>
@@ -94,7 +94,7 @@ $navActive = 'rekap_nomor';
                             <?php if (isset($byNomor[$i])): $r = $byNomor[$i]; ?>
                             <tr>
                                 <td><span class="badge badge-forest mono">#<?= str_pad((string) $i, 3, '0', STR_PAD_LEFT) ?></span></td>
-                                <td><strong><?= htmlspecialchars($r['no_surat']) ?></strong><br><span class="faint mono" style="font-size:12px"><?= htmlspecialchars($r['code_6digit']) ?></span></td>
+                                <td><strong><?= htmlspecialchars($r['no_surat']) ?></strong><br><span class="faint mono u-font-12"><?= htmlspecialchars($r['code_6digit']) ?></span></td>
                                 <td><?= htmlspecialchars($r['perihal']) ?></td>
                                 <td><?= date('d M Y', strtotime($r['tanggal_dokumen'])) ?></td>
                                 <td>
@@ -117,7 +117,7 @@ $navActive = 'rekap_nomor';
             </div>
             <p class="faint" style="font-size:12.5px;margin:14px 0 0">Hanya dokumen bernomor (surat/sertifikat). Invoice/struk tidak memakai nomor urut dan tidak tampil di sini.</p>
             <?php else: ?>
-            <div class="textc" style="padding:48px 0">
+            <div class="textc u-py-48">
                 <p class="faint">Belum ada nomor terpakai.</p>
             </div>
             <?php endif; ?>
@@ -126,5 +126,4 @@ $navActive = 'rekap_nomor';
 </main>
 
 <script src="assets/nav.js?v=<?= ASSET_VERSION ?>"></script>
-</body>
-</html>
+<?php include __DIR__ . '/_foot.php'; ?>

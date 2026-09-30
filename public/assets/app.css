@@ -268,24 +268,6 @@ input[type="date"].input { min-height: 45px; }
 .panel__bd { padding: 22px; }
 .panel--edge > .panel__hd { border-top: 0; }
 .panel--sticky { position: sticky; top: 70px; }
-.profile-settings { width: 100%; max-width: 680px; margin: 0 auto; display: flex; flex-direction: column; justify-content: center; min-height: calc(100vh - 180px); }
-.profile-settings > .panel {
-    width: 100%;
-    padding: 26px 28px;
-    background: #FFFFFF;
-    border: 1px solid #E2E8F0;
-    border-radius: 14px;
-    box-shadow: 0 2px 8px -2px rgba(15, 23, 42, .08), 0 4px 16px -4px rgba(15, 23, 42, .06);
-}
-.profile-settings > .panel + .panel { margin-top: 24px; }
-.profile-settings .panel__hd,
-.profile-settings .panel__bd { padding: 0; }
-.profile-settings .panel__hd { border-bottom: none; }
-/* Setarakan ukuran elemen halaman profil dengan profil almutqon */
-.profile-settings .panel__title { font-size: 15px; }
-.profile-settings .input,
-.profile-settings .select { font-size: 14px; padding: 11px 14px; border-radius: 10px; }
-.profile-settings .btn { font-size: 14px; }
 
 /* ---------- Profil: card ala profil almutqon ---------- */
 .profile-card {
@@ -304,11 +286,6 @@ input[type="date"].input { min-height: 45px; }
 .profile-card__row + .profile-card__row { border-top: 1px solid var(--line); }
 .profile-card__row span:first-child { color: var(--ink-soft); }
 .profile-card__row code { color: var(--ink); font-weight: 600; }
-/* Samakan ukuran font halaman profil dengan almutqon */
-.profile-card .field__label { font-size: 13px; text-transform: none; letter-spacing: normal; color: #334155; }
-.profile-card .input,
-.profile-card .select { font-size: 14px; }
-.profile-card .btn { font-size: 13px; }
 
 /* Tipografi profil disamakan dengan profil pengajar Al-Mutqon.
    Scope hanya ke halaman profil agar halaman verifikasi lain tetap utuh. */
@@ -368,10 +345,6 @@ input[type="date"].input { min-height: 45px; }
     margin-bottom: 20px;
     font-size: 13px;
 }
-@media (max-width: 768px) {
-    body:has(.sidebar) .page.profile-settings-page { padding: 18px 16px 48px; }
-    .profile-settings > .panel { padding: 20px 18px; }
-}
 
 /* ---------- Statistik (kartu ala dashboard admin almutqon) ---------- */
 .stat { background: var(--card); border: 1px solid var(--line); border-radius: 14px; box-shadow: 0 4px 16px -4px rgba(15,23,42,.08), 0 2px 6px -2px rgba(15,23,42,.06); padding: 18px 20px; display: flex; align-items: center; gap: 14px; min-width: 0; }
@@ -405,6 +378,27 @@ input[type="date"].input { min-height: 45px; }
 .alert-ok { background: var(--ok-soft); border-color: #CBE3D3; color: var(--ok); }
 .alert-err { background: var(--err-soft); border-color: #ECC4C0; color: var(--err); }
 .alert-warn { background: var(--warn-soft); border-color: #E7D5A6; color: var(--warn); }
+
+/* ---------- Utilitas kecil ---------- */
+.u-font-12 { font-size: 12px; }
+.u-font-12-5 { font-size: 12.5px; }
+.u-font-14 { font-size: 14px; }
+.u-mt-3 { margin-top: 3px; }
+.u-mt-6 { margin-top: 6px; }
+.u-mb-16 { margin-bottom: 16px; }
+.u-mb-22 { margin-bottom: 22px; }
+.u-mb-24 { margin-bottom: 24px; }
+.u-py-48 { padding: 48px 0; }
+.u-shrink-0 { flex-shrink: 0; }
+.u-gap-6 { gap: 6px; }
+.u-flex-field { flex: 1; min-width: 220px; }
+.u-reset-brand { display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 12px; }
+.u-reset-brand-icon { color: var(--forest); font-size: 28px; }
+.u-reset-brand-name { font-weight: 800; letter-spacing: 1px; color: var(--forest); font-size: 20px; }
+.u-reset-brand-sub { font-size: 10px; letter-spacing: 2px; color: var(--ink-faint); }
+.u-reset-title { font-size: 22px; margin-bottom: 8px; }
+.u-reset-footer { text-align: center; margin-top: 16px; font-size: 13px; color: var(--ink-soft); }
+.u-reset-link { color: var(--forest); text-decoration: none; }
 
 /* ---------- Tabel ---------- */
 .table-wrap { overflow-x: auto; margin: 0 -20px; padding: 0 20px; }

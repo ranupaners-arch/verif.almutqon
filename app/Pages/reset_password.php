@@ -44,24 +44,24 @@ if ($token === '') {
 <main class="page" style="max-width:440px; margin: 80px auto;">
     <div class="panel">
         <div class="panel__hd" style="text-align:center; border-bottom:none; padding-bottom:0">
-            <div style="display:flex; align-items:center; justify-content:center; gap:10px; margin-bottom:12px;">
-                <span style="color:var(--forest); font-size:28px;">password</span>
+            <div class="u-reset-brand">
+                <span class="u-reset-brand-icon">password</span>
                 <div>
-                    <div style="font-weight:800; letter-spacing:1px; color:var(--forest); font-size:20px;">AL MUTQON</div>
-                    <div style="font-size:10px; letter-spacing:2px; color:var(--ink-faint);">VERIFICATION SYSTEM</div>
+                    <div class="u-reset-brand-name">AL MUTQON</div>
+                    <div class="u-reset-brand-sub">VERIFICATION SYSTEM</div>
                 </div>
             </div>
-            <h1 style="font-size:22px; margin-bottom:8px;">Buat Password Baru</h1>
-            <p class="faint" style="font-size:14px;">Masukkan password baru untuk akun Anda (minimal 8 karakter).</p>
+            <h1 class="u-reset-title">Buat Password Baru</h1>
+            <p class="faint u-font-14">Masukkan password baru untuk akun Anda (minimal 8 karakter).</p>
         </div>
         <div class="panel__bd">
             <?php if ($error): ?>
-            <div class="alert alert-err" style="margin-bottom:16px">
+            <div class="alert alert-err u-mb-16">
                 <span><?= htmlspecialchars($error) ?></span>
             </div>
             <?php elseif ($sukses): ?>
-            <div class="alert alert-ok" style="margin-bottom:16px">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><path d="M5 13l4 4L19 7"/></svg>
+            <div class="alert alert-ok u-mb-16">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="u-shrink-0"><path d="M5 13l4 4L19 7"/></svg>
                 <span><?= htmlspecialchars($sukses) ?></span>
             </div>
             <a href="staff.php" class="btn btn-primary btn-block" style="text-align:center; text-decoration:none;">Ke Halaman Masuk</a>
@@ -80,12 +80,11 @@ if ($token === '') {
                 <button type="submit" class="btn btn-primary btn-block">Simpan Password Baru</button>
             </form>
             <?php endif; ?>
-            <p style="text-align:center; margin-top:16px; font-size:13px; color:var(--ink-soft);">
-                <a href="staff.php" style="color:var(--forest); text-decoration:none;">← Kembali ke halaman masuk</a>
+            <p class="u-reset-footer">
+                <a href="staff.php" class="u-reset-link">← Kembali ke halaman masuk</a>
             </p>
         </div>
     </div>
 </main>
 <script src="assets/nav.js?v=<?= ASSET_VERSION ?>"></script>
-</body>
-</html>
+<?php include __DIR__ . '/_foot.php'; ?>

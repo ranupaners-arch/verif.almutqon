@@ -277,7 +277,7 @@ $navActive = 'manage_staff';
                         <option value="admin">Admin</option>
                         <?php if ($is_direktur): ?><option value="direktur">Direktur</option><?php endif; ?>
                     </select>
-                    <?php if (!$is_direktur): ?><span class="faint" style="font-size:12px">*Hanya Direktur yang dapat membuat role Direktur.</span><?php endif; ?>
+                    <?php if (!$is_direktur): ?><span class="faint u-font-12">*Hanya Direktur yang dapat membuat role Direktur.</span><?php endif; ?>
                 </div>
                 <div class="field">
                     <label class="field__label" for="staff-password">Password Awal</label>
@@ -311,10 +311,10 @@ $navActive = 'manage_staff';
                     <tbody>
                     <?php foreach ($staff_list as $s): ?>
                         <tr class="<?= !$s['is_active'] ? 'is-off' : '' ?>">
-                            <td><span class="mono" style="font-size:12px"><?= htmlspecialchars($s['nip']) ?></span></td>
+                            <td><span class="mono u-font-12"><?= htmlspecialchars($s['nip']) ?></span></td>
                             <td>
                                 <p style="font-weight:600"><?= htmlspecialchars($s['nama_lengkap']) ?></p>
-                                <p class="faint" style="font-size:12px"><?= htmlspecialchars($s['jabatan']) ?></p>
+                                <p class="faint u-font-12"><?= htmlspecialchars($s['jabatan']) ?></p>
                             </td>
                             <td>
                                 <span class="badge <?= $s['role'] === 'direktur' ? 'badge-gold' : ($s['role'] === 'admin' ? 'badge-blue' : 'badge-muted') ?>">
@@ -385,7 +385,7 @@ $navActive = 'manage_staff';
                     <option value="admin">Admin</option>
                     <?php if ($is_direktur): ?><option value="direktur">Direktur</option><?php endif; ?>
                 </select>
-                <?php if (!$is_direktur): ?><span class="faint" style="font-size:12px">*Hanya Direktur yang dapat mengubah role.</span><?php endif; ?>
+                <?php if (!$is_direktur): ?><span class="faint u-font-12">*Hanya Direktur yang dapat mengubah role.</span><?php endif; ?>
             </div>
             <div class="btn-row">
                 <button type="button" class="btn btn-light" onclick="closeModal('modal-edit')">Batal</button>
@@ -434,5 +434,4 @@ function openResetModal(id, nama) {
 }
 </script>
 <script src="assets/nav.js?v=<?= ASSET_VERSION ?>"></script>
-</body>
-</html>
+<?php include __DIR__ . '/_foot.php'; ?>

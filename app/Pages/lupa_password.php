@@ -48,24 +48,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <main class="page" style="max-width:440px; margin: 80px auto;">
     <div class="panel">
         <div class="panel__hd" style="text-align:center; border-bottom:none; padding-bottom:0">
-            <div style="display:flex; align-items:center; justify-content:center; gap:10px; margin-bottom:12px;">
-                <span style="color:var(--forest); font-size:28px;">lock_reset</span>
+            <div class="u-reset-brand">
+                <span class="u-reset-brand-icon">lock_reset</span>
                 <div>
-                    <div style="font-weight:800; letter-spacing:1px; color:var(--forest); font-size:20px;">AL MUTQON</div>
-                    <div style="font-size:10px; letter-spacing:2px; color:var(--ink-faint);">VERIFICATION SYSTEM</div>
+                    <div class="u-reset-brand-name">AL MUTQON</div>
+                    <div class="u-reset-brand-sub">VERIFICATION SYSTEM</div>
                 </div>
             </div>
-            <h1 style="font-size:22px; margin-bottom:8px;">Reset Password</h1>
-            <p class="faint" style="font-size:14px;">Masukkan email terdaftar. Jika email Anda ada di sistem, kami kirim link untuk membuat password baru (berlaku 30 menit).</p>
+            <h1 class="u-reset-title">Reset Password</h1>
+            <p class="faint u-font-14">Masukkan email terdaftar. Jika email Anda ada di sistem, kami kirim link untuk membuat password baru (berlaku 30 menit).</p>
         </div>
         <div class="panel__bd">
             <?php if ($kirim_ok): ?>
-            <div class="alert alert-ok" style="margin-bottom:16px">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><path d="M5 13l4 4L19 7"/></svg>
+            <div class="alert alert-ok u-mb-16">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="u-shrink-0"><path d="M5 13l4 4L19 7"/></svg>
                 <span>Jika email terdaftar, link reset sudah dikirim. Cek inbox Anda (termasuk folder spam).</span>
             </div>
             <?php elseif ($error): ?>
-            <div class="alert alert-err" style="margin-bottom:16px">
+            <div class="alert alert-err u-mb-16">
                 <span><?= htmlspecialchars($error) ?></span>
             </div>
             <?php endif; ?>
@@ -78,11 +78,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
                 <button type="submit" class="btn btn-primary btn-block">Kirim Link Reset</button>
             </form>
-            <p style="text-align:center; margin-top:16px; font-size:13px; color:var(--ink-soft);">
-                <a href="staff.php" style="color:var(--forest); text-decoration:none;">← Kembali ke halaman masuk</a>
+            <p class="u-reset-footer">
+                <a href="staff.php" class="u-reset-link">← Kembali ke halaman masuk</a>
             </p>
         </div>
     </div>
 </main>
-</body>
-</html>
+<?php include __DIR__ . '/_foot.php'; ?>

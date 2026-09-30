@@ -110,10 +110,10 @@ $navActive = 'profil';
             <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(csrf_token(), ENT_QUOTES, 'UTF-8') ?>">
             <input type="hidden" name="aksi" value="simpan">
             <input type="hidden" name="kembali" value="profil.php">
-            <div style="flex:1;min-width:220px;">
+            <div class="u-flex-field">
                 <label class="field__label" for="avatar-file-profil">Ganti Avatar</label>
                 <input class="input" id="avatar-file-profil" type="file" name="avatar" accept=".jpg,.jpeg,.png,.webp" required>
-                <p class="faint" style="font-size:12px;margin-top:6px">JPG, PNG, atau WebP, maksimal 1 MB.</p>
+                <p class="faint u-font-12 u-mt-6">JPG, PNG, atau WebP, maksimal 1 MB.</p>
             </div>
             <button type="submit" class="btn btn-primary" style="flex:0 0 auto;flex-shrink:0;width:fit-content;min-width:0;white-space:nowrap;position:relative;top:30px;">Simpan Avatar</button>
         </form>
@@ -121,16 +121,16 @@ $navActive = 'profil';
         <form method="POST" class="row" style="gap:12px;align-items:end;flex-wrap:wrap;margin-top:20px">
             <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(csrf_token(), ENT_QUOTES, 'UTF-8') ?>">
             <input type="hidden" name="aksi" value="simpan_nama">
-            <div style="flex:1;min-width:220px;">
+            <div class="u-flex-field">
                 <label class="field__label" for="nama-lengkap">Nama Lengkap</label>
                 <input class="input" id="nama-lengkap" type="text" name="nama_lengkap" value="<?= htmlspecialchars($akun['nama']) ?>" maxlength="255" required>
             </div>
-            <button type="submit" class="btn btn-primary" style="flex-shrink:0">Simpan Nama</button>
+            <button type="submit" class="btn btn-primary u-shrink-0">Simpan Nama</button>
         </form>
     </section>
 
     <section class="profile-card">
-        <div class="profile-card__title" style="margin-bottom:16px;">Info Akun</div>
+        <div class="profile-card__title u-mb-16">Info Akun</div>
         <div class="profile-card__table">
             <div class="profile-card__row"><span>ID Pengguna / NIP</span><code><?= htmlspecialchars($akun['nip']) ?></code></div>
             <div class="profile-card__row"><span>Email</span><span><?= htmlspecialchars($akun['email']) ?></span></div>
@@ -139,12 +139,12 @@ $navActive = 'profil';
         <form method="POST" id="form-ganti-email" style="margin-top:20px;display:none;">
             <input type="hidden" name="csrf_token" value="<?= htmlspecialchars(csrf_token(), ENT_QUOTES, 'UTF-8') ?>">
             <input type="hidden" name="aksi" value="simpan_email">
-            <div style="margin-bottom:16px;">
+            <div class="u-mb-16">
                 <label class="field__label" for="email-baru">Email Baru</label>
                 <input class="input" id="email-baru" type="email" name="email_baru" value="<?= htmlspecialchars($akun['email']) ?>" maxlength="255" required>
-                <p class="faint" style="font-size:12px;margin-top:6px">Email dipakai untuk login dashboard dan harus unik.</p>
+                <p class="faint u-font-12 u-mt-6">Email dipakai untuk login dashboard dan harus unik.</p>
             </div>
-            <div style="margin-bottom:16px;">
+            <div class="u-mb-16">
                 <label class="field__label" for="pass-lama-email">Password Saat Ini</label>
                 <input class="input" type="password" name="password_lama" id="pass-lama-email" required placeholder="Masukkan password saat ini">
             </div>
@@ -156,7 +156,7 @@ $navActive = 'profil';
     </section>
 
     <section class="profile-card">
-        <div class="profile-card__title" style="margin-bottom:16px;">Keamanan</div>
+        <div class="profile-card__title u-mb-16">Keamanan</div>
         <p class="profile-card__sub" style="margin:0 0 16px;">Gunakan password yang kuat dan jangan bagikan kepada orang lain.</p>
         <a class="btn btn-primary btn-block" href="change_password.php">Ganti Password</a>
     </section>
@@ -193,5 +193,4 @@ document.getElementById('avatar-file-profil').addEventListener('change', functio
 })();
 </script>
 <script src="assets/nav.js?v=<?= ASSET_VERSION ?>"></script>
-</body>
-</html>
+<?php include __DIR__ . '/_foot.php'; ?>

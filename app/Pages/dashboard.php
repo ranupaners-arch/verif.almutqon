@@ -250,7 +250,7 @@ $extraJs = ['assets/vendor/qr-code-styling.js'];
 
 <main class="page page--wide dashboard-page">
     <!-- STATS -->
-    <div class="grid4" style="margin-bottom:24px">
+    <div class="grid4 u-mb-24">
         <div class="stat">
             <span class="stat__icon stat__icon--green material-symbols-rounded" aria-hidden="true">article</span>
             <span class="stat__body">
@@ -284,7 +284,7 @@ $extraJs = ['assets/vendor/qr-code-styling.js'];
     <!-- NOTIFIKASI -->
     <?php if ($success_msg): ?>
     <?php if (isset($last_token)): $verify_url = APP_URL . "/index.php?token=" . $last_token; ?>
-    <div class="panel" style="margin-bottom:22px">
+    <div class="panel u-mb-22">
         <div class="panel__hd">
             <h2 class="panel__title ok-text"><?= htmlspecialchars($success_msg) ?></h2>
             <div class="row">
@@ -318,20 +318,20 @@ $extraJs = ['assets/vendor/qr-code-styling.js'];
     </div>
     <?php else: ?>
     <div class="alert alert-ok">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><path d="M5 13l4 4L19 7"/></svg>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="u-shrink-0"><path d="M5 13l4 4L19 7"/></svg>
         <span><?= htmlspecialchars($success_msg) ?></span>
     </div>
     <?php endif; endif; ?>
 
     <?php if ($error_msg): ?>
     <div class="alert alert-err">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><path d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="u-shrink-0"><path d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
         <span><?= htmlspecialchars($error_msg) ?></span>
     </div>
     <?php endif; ?>
 
     <?php if ($is_admin_or_direktur): ?>
-    <section class="ops-grid" aria-label="Ringkasan operasional" style="margin-bottom:24px">
+    <section class="ops-grid u-mb-24" aria-label="Ringkasan operasional">
         <div class="panel ops-panel">
             <div class="ops-panel__icon material-symbols-rounded" aria-hidden="true">upload_file</div>
             <div>
@@ -421,7 +421,7 @@ $extraJs = ['assets/vendor/qr-code-styling.js'];
                             <a class="filter-tab<?= $statusF === 'active' ? ' active' : '' ?>" href="dashboard.php?<?= htmlspecialchars($buildQs(['status' => 'active'])) ?>" role="tab" aria-selected="<?= $statusF === 'active' ? 'true' : 'false' ?>">Aktif</a>
                             <a class="filter-tab<?= $statusF === 'revoked' ? ' active' : '' ?>" href="dashboard.php?<?= htmlspecialchars($buildQs(['status' => 'revoked'])) ?>" role="tab" aria-selected="<?= $statusF === 'revoked' ? 'true' : 'false' ?>">Dicabut</a>
                         </div>
-                        <form method="get" action="dashboard.php" class="row" style="gap:6px" role="search" id="document-search-form">
+                        <form method="get" action="dashboard.php" class="row u-gap-6" role="search" id="document-search-form">
                             <input type="hidden" name="status" value="<?= htmlspecialchars($statusF) ?>">
                             <input type="search" class="input search-input" id="document-search" name="q" value="<?= htmlspecialchars($q) ?>" placeholder="Cari nomor / perihal / penerima..." autocomplete="off">
                         </form>
@@ -434,7 +434,7 @@ $extraJs = ['assets/vendor/qr-code-styling.js'];
                             <?php endforeach; ?>
                         </div>
                         <?php else: ?>
-                        <div class="textc" style="padding:48px 0">
+                        <div class="textc u-py-48">
                             <p class="faint"><?= ($q !== '' || $statusF !== '') ? 'Tidak ada dokumen yang cocok dengan pencarian/filter.' : 'Belum ada dokumen. Buat dokumen pertama Anda.' ?></p>
                         </div>
                         <?php endif; ?>
@@ -446,7 +446,7 @@ $extraJs = ['assets/vendor/qr-code-styling.js'];
                         <?php else: ?>
                         <span class="btn btn-light btn-sm is-off">&larr; Sebelumnya</span>
                         <?php endif; ?>
-                        <span class="faint" style="font-size:12.5px"><?= $curPage ?> / <?= $totalPages ?></span>
+                        <span class="faint u-font-12-5"><?= $curPage ?> / <?= $totalPages ?></span>
                         <?php if ($curPage < $totalPages): ?>
                         <a class="btn btn-light btn-sm" href="dashboard.php?<?= htmlspecialchars($buildQs(['page' => $curPage + 1])) ?>">Berikutnya &rarr;</a>
                         <?php else: ?>
@@ -464,7 +464,7 @@ $extraJs = ['assets/vendor/qr-code-styling.js'];
         <div class="panel__hd">
             <div>
                 <h2 class="panel__title" id="staff-summary-title">Ringkasan Produktivitas Staf</h2>
-                <p class="faint" style="font-size:12.5px;margin-top:3px">Enam akun aktif dengan aktivitas dokumen terbanyak.</p>
+                <p class="faint u-font-12-5 u-mt-3">Enam akun aktif dengan aktivitas dokumen terbanyak.</p>
             </div>
             <a class="btn btn-soft btn-sm" href="manage_staff.php">Kelola Staff</a>
         </div>
@@ -474,7 +474,7 @@ $extraJs = ['assets/vendor/qr-code-styling.js'];
                 <tbody>
                 <?php foreach ($staff_summary as $summary): ?>
                     <tr>
-                        <td><strong><?= htmlspecialchars($summary['nama_lengkap']) ?></strong><br><span class="faint" style="font-size:12px"><?= htmlspecialchars($summary['jabatan']) ?></span></td>
+                        <td><strong><?= htmlspecialchars($summary['nama_lengkap']) ?></strong><br><span class="faint u-font-12"><?= htmlspecialchars($summary['jabatan']) ?></span></td>
                         <td><?= (int) $summary['document_count'] ?></td>
                         <td><?= (int) $summary['invoice_count'] ?></td>
                         <td><?= $summary['last_document_at'] ? htmlspecialchars(date('d M Y, H:i', strtotime($summary['last_document_at']))) : '<span class="faint">Belum ada</span>' ?></td>
@@ -570,7 +570,7 @@ function downloadQR() {
             window.history.replaceState({}, '', url);
         } catch (error) {
             if (error.name !== 'AbortError') {
-                results.innerHTML = '<div class="textc" style="padding:48px 0"><p class="err-text">Pencarian tidak dapat dimuat. Silakan coba lagi.</p></div>';
+                results.innerHTML = '<div class="textc u-py-48"><p class="err-text">Pencarian tidak dapat dimuat. Silakan coba lagi.</p></div>';
             }
         } finally {
             if (thisRequest === requestNumber) input.removeAttribute('aria-busy');
@@ -598,5 +598,4 @@ function downloadQR() {
 })();
 </script>
 <script src="assets/nav.js?v=<?= ASSET_VERSION ?>"></script>
-</body>
-</html>
+<?php include __DIR__ . '/_foot.php'; ?>

@@ -15,7 +15,7 @@ include __DIR__ . '/_modal_shared.php';
             <div class="field">
                 <label class="field__label" for="file_surat">Pilih File PDF</label>
                 <input class="input" id="file_surat" type="file" name="file_surat" accept=".pdf" required>
-                <span class="faint" style="font-size:12px">Format PDF &bull; Maksimal 10 MB &bull; Khusus dokumen milik Anda (atau admin/direktur)</span>
+                <span class="faint u-font-12">Format PDF &bull; Maksimal 10 MB &bull; Khusus dokumen milik Anda (atau admin/direktur)</span>
             </div>
             <div class="btn-row">
                 <button type="button" class="btn btn-light" onclick="closeModal('modal-upload')">Batal</button>

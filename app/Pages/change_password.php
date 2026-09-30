@@ -79,12 +79,12 @@ $navActive = 'change_password';
                     <label class="field__label" for="pass-baru">Password Baru</label>
                     <input class="input" type="password" name="password_baru" id="pass-baru" required minlength="8" placeholder="Minimal 8 karakter">
                     <div class="strength"><div id="strength-bar" class="strength__fill" style="width:0"></div></div>
-                    <p id="strength-text" class="faint" style="font-size:12px"></p>
+                    <p id="strength-text" class="faint u-font-12"></p>
                 </div>
                 <div class="field">
                     <label class="field__label" for="pass-konf">Konfirmasi Password Baru</label>
                     <input class="input" type="password" name="password_konfirmasi" id="pass-konf" required minlength="8" placeholder="Ulangi password baru">
-                    <p id="match-text" class="hidden" style="font-size:12px;margin-top:6px"></p>
+                    <p id="match-text" class="hidden u-font-12 u-mt-6"></p>
                 </div>
                 <button type="submit" class="btn btn-primary btn-block">Simpan Password Baru</button>
             </form>
@@ -93,7 +93,7 @@ $navActive = 'change_password';
 
     <div class="alert alert-warn" style="margin-top:18px">
         <div>
-            <strong style="font-size:12px">Tips Keamanan</strong>
+            <strong class="u-font-12">Tips Keamanan</strong>
             <ul style="font-size:12px;margin:6px 0 0;padding-left:18px">
                 <li>Gunakan kombinasi huruf besar, kecil, angka, dan simbol.</li>
                 <li>Jangan gunakan password yang sama dengan akun lain.</li>
@@ -156,5 +156,4 @@ document.getElementById('pass-konf').addEventListener('input', function() {
 });
 </script>
 <script src="assets/nav.js?v=<?= ASSET_VERSION ?>"></script>
-</body>
-</html>
+<?php include __DIR__ . '/_foot.php'; ?>

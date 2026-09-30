@@ -56,7 +56,7 @@ $query = static function (array $extra = []) use ($q, $action): string {
 <main class="page page--wide audit-page">
     <section class="panel" aria-labelledby="audit-title">
         <div class="panel__hd">
-            <div><h2 class="panel__title" id="audit-title">Riwayat Perubahan Sistem</h2><p class="faint" style="font-size:12.5px;margin-top:3px">Catatan pembuatan, perubahan akses, dan status dokumen.</p></div>
+            <div><h2 class="panel__title" id="audit-title">Riwayat Perubahan Sistem</h2><p class="faint u-font-12-5 u-mt-3">Catatan pembuatan, perubahan akses, dan status dokumen.</p></div>
             <span class="badge badge-forest" id="audit-total"><?= $total ?> aktivitas</span>
         </div>
         <div class="panel__bd">
@@ -71,7 +71,7 @@ $query = static function (array $extra = []) use ($q, $action): string {
             <?php if ($logs): foreach ($logs as $log): ?><tr><td><?= htmlspecialchars(date('d M Y, H:i', strtotime($log['created_at']))) ?></td><td><?= htmlspecialchars($log['nama_lengkap'] ?: 'Sistem') ?></td><td><span class="badge badge-muted"><?= htmlspecialchars(str_replace('_', ' ', $log['action'])) ?></span></td><td><?= htmlspecialchars($log['description']) ?></td><td class="mono faint"><?= htmlspecialchars($log['ip_address']) ?></td></tr><?php endforeach; else: ?><tr><td colspan="5" class="textc faint">Tidak ada aktivitas yang cocok.</td></tr><?php endif; ?>
             </tbody></table>
         </div>
-        <?php if ($pages > 1): ?><div class="pager audit-pager" id="audit-pager"><?php if ($page > 1): ?><a class="btn btn-light btn-sm" href="audit_log.php?<?= htmlspecialchars($query(['page' => $page - 1])) ?>">&larr; Sebelumnya</a><?php endif; ?><span class="faint" style="font-size:12.5px">Halaman <?= $page ?> dari <?= $pages ?></span><?php if ($page < $pages): ?><a class="btn btn-light btn-sm" href="audit_log.php?<?= htmlspecialchars($query(['page' => $page + 1])) ?>">Berikutnya &rarr;</a><?php endif; ?></div><?php endif; ?>
+        <?php if ($pages > 1): ?><div class="pager audit-pager" id="audit-pager"><?php if ($page > 1): ?><a class="btn btn-light btn-sm" href="audit_log.php?<?= htmlspecialchars($query(['page' => $page - 1])) ?>">&larr; Sebelumnya</a><?php endif; ?><span class="faint u-font-12-5">Halaman <?= $page ?> dari <?= $pages ?></span><?php if ($page < $pages): ?><a class="btn btn-light btn-sm" href="audit_log.php?<?= htmlspecialchars($query(['page' => $page + 1])) ?>">Berikutnya &rarr;</a><?php endif; ?></div><?php endif; ?>
     </section>
 </main>
 <script>
@@ -117,4 +117,4 @@ $query = static function (array $extra = []) use ($q, $action): string {
 })();
 </script>
 <script src="assets/nav.js?v=<?= ASSET_VERSION ?>"></script>
-</body></html>
+<?php include __DIR__ . '/_foot.php'; ?>

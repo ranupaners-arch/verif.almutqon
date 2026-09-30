@@ -61,7 +61,7 @@ $navActive = 'data_invoice';
 
 <main class="page page--wide">
     <!-- STATS -->
-    <div class="stat" style="margin-bottom:22px">
+    <div class="stat u-mb-22">
         <span class="stat__body">
             <span class="stat__value"><?= (int) ($stat['total'] ?? 0) ?></span>
             <span class="stat__label">Total Invoice</span>
@@ -71,14 +71,14 @@ $navActive = 'data_invoice';
     <!-- NOTIFIKASI -->
     <?php if ($success_msg): ?>
     <div class="alert alert-ok">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><path d="M5 13l4 4L19 7"/></svg>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="u-shrink-0"><path d="M5 13l4 4L19 7"/></svg>
         <span><?= htmlspecialchars($success_msg) ?></span>
     </div>
     <?php endif; ?>
 
     <?php if ($error_msg): ?>
     <div class="alert alert-err">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><path d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="u-shrink-0"><path d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
         <span><?= htmlspecialchars($error_msg) ?></span>
     </div>
     <?php endif; ?>
@@ -98,7 +98,7 @@ $navActive = 'data_invoice';
                 <?php endforeach; ?>
             </div>
             <?php else: ?>
-            <div class="textc" style="padding:48px 0">
+            <div class="textc u-py-48">
                 <p class="faint">Belum ada invoice. Invoice tercatat otomatis saat pembayaran dikonfirmasi LUNAS.</p>
             </div>
             <?php endif; ?>
@@ -107,5 +107,4 @@ $navActive = 'data_invoice';
 </main>
 
 <script src="assets/nav.js?v=<?= ASSET_VERSION ?>"></script>
-</body>
-</html>
+<?php include __DIR__ . '/_foot.php'; ?>
