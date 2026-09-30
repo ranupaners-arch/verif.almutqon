@@ -3,6 +3,21 @@ Entri terbaru di paling atas. Ditulis sesuai aturan adaCODE (perbaikan terverifi
 
 ---
 
+### Fix #10 — Halaman Rekap Nomor 500: `$pageTitle` hilang setelah konsolidasi `_head.php`
+Gejala: `/rekap_nomor.php` balas HTTP 500 dengan body kosong. Halaman lain normal. Baru muncul saat diuji lewat nginx + PHP-FPM; di `php -S` halaman ini selalu lolos.
+
+| Aspek | Rincian |
+|---|---|
+| Tanggal | 2026-09-30 |
+| File | `app/Pages/rekap_nomor.php:43` |
+| Masalah | `$pageTitleFull` di-set, `$pageTitle` tidak. `_masthead.php:12` memanggil `htmlspecialchars($pageTitle)` |
+| Akar | Saat konsolidasi 10 `<head>` jadi `_head.php` (Fase 4), `rekap_nomor.php` kehilangan baris `$pageTitle`; hanya `$pageTitleFull` yang tersisa. Tidak ketahuan karena `set_error_handler` menjadikan warning sebagai exception hanya saat `APP_DEBUG=true`, dan smoke test harness lama mendefinisikan `$pageTitle` secara global sehingga men masking bug-nya |
+| Fix | Tambahkan `$pageTitle = 'Rekap Nomor';` sebelum `$pageTitleFull` |
+| Verifikasi | 11 halaman diuji via HTTP nyata (nginx + PHP-FPM, tiap request terisolasi seperti FPM): semua 200, 10 judul cocok byte-per-byte dengan nilai sebelumnya, 0 entri WARNING/ERROR baru di `storage/logs/app-2026-09-30.log` setelah fix. `php -l` 66/66. Audit 7 halaman yang me-`_masthead`: semua punya `$pageTitle`, `$pageTitleFull`, `$navActive` |
+| Pelajaran | Harness render yang menyetel variabel halaman secara global menutupi bug yang nyata muncul di FPM. Uji halaman selalu lewat HTTP per-request, bukan `include` di satu proses. Warning yang jadi exception saat `APP_DEBUG` menghasilkan 500, bukan halaman terpotong — untuk bug undefined variable, `php -l` dan smoke test sama-sama buta |
+| Log Keyword | rekap_nomor 500, undefined variable pageTitle, _masthead, PHP-FPM, smoke test false negative |
+| Deploy | BELUM — belum dipush |
+
 ### Fix #9 — Refactor host-ready: config terpisah, error tertangani, aset lokal, cache-buster tunggal
 Gejala: aplikasi bergantung pada CDN & Google Fonts (blank bila diblokir jaringan), 39 cache-buster tak sinkron sehingga sebagian halaman memuat CSS lama, stack trace PHP bisa bocor di production, label "WIB" tidak cocok dengan zona waktu server, dan `parse_ini_file` merusak nilai `.env` yang mengandung `#`.
 

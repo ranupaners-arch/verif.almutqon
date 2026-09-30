@@ -40,6 +40,7 @@ for ($i = 1; $i <= $max; $i++) {
 }
 
 // Navigasi
+$pageTitle = 'Rekap Nomor';
 $pageTitleFull = 'Rekap Nomor - AL MUTQON';
 $navActive = 'rekap_nomor';
 ?>
