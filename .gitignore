@@ -17,6 +17,10 @@ desktop.ini
 /storage/uploads_legacy_t/*
 !/storage/uploads_legacy_t/.gitkeep
 
+# Log aplikasi (berisi path server & pesan error, tidak untuk ditaruh di Git)
+/storage/logs/*
+!/storage/logs/.gitkeep
+
 # Generated uploads / avatars
 /public/assets/avatars/*
 !/public/assets/avatars/.gitkeep

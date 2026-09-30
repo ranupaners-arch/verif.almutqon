@@ -39,7 +39,22 @@ try {
         ]
     );
 } catch (PDOException $e) {
-    error_log('Database connection failed: ' . $e->getMessage());
+    app_log('error', 'Database connection failed: ' . $e->getMessage());
     http_response_code(500);
     exit('Terjadi gangguan koneksi database. Silakan hubungi administrator.');
+}
+
+/**
+ * Samakan zona waktu MySQL dengan APP_TIMEZONE.
+ *
+ * Tanpa ini server ber-UTC akan menulis NOW() dalam UTC sementara PHP memakai
+ * Asia/Jakarta, sehingga cap waktu pada dokumen dan label "WIB" tidak sinkron.
+ * Offset dikirim sebagai "+07:00" (bukan "Asia/Jakarta") karena MySQL hanya
+ * mengenali nama zona bila tabel timezone sudah dimuat di server.
+ */
+try {
+    $appTimezoneOffset = (new DateTimeImmutable('now', new DateTimeZone(APP_TIMEZONE)))->format('P');
+    $pdo->exec('SET time_zone = ' . $pdo->quote($appTimezoneOffset));
+} catch (Throwable $e) {
+    app_log('warning', 'Gagal menyamakan zona waktu MySQL: ' . $e->getMessage());
 }
