@@ -3,6 +3,21 @@ Entri terbaru di paling atas. Ditulis sesuai aturan adaCODE (perbaikan terverifi
 
 ---
 
+### Fix #9 — Refactor host-ready: config terpisah, error tertangani, aset lokal, cache-buster tunggal
+Gejala: aplikasi bergantung pada CDN & Google Fonts (blank bila diblokir jaringan), 39 cache-buster tak sinkron sehingga sebagian halaman memuat CSS lama, stack trace PHP bisa bocor di production, label "WIB" tidak cocok dengan zona waktu server, dan `parse_ini_file` merusak nilai `.env` yang mengandung `#`.
+
+| Aspek | Rincian |
+|---|---|
+| Tanggal | 2026-09-30 |
+| File | `app/Bootstrap.php`, `app/Config/{php_version,env,app,paths,database}.php`, `app/Support/{errors,security,account,rate_limit,documents,auth,mail,format,deploy_checks,jenis_dokumen}.php`, `app/Pages/_head.php`, `public/diagnosa.php`, `public/assets/app.css`, `public/.htaccess`, `.htaccess` |
+| Masalah | Monolit 312 baris mencampur 9 tanggung jawab; tidak ada exception handler; tidak ada `date_default_timezone_set`; `getenv()` tanpa cadangan `putenv`; 10 duplikasi `<head>`; path avatar di-hardcode di 4 tempat |
+| Akar | Pertumbuhan fitur ditambahkan langsung ke satu berkas, dan konfigurasi di Schmidt dibaca ulang di beberapa lokasi dengan cara berbeda |
+| Fix | `Bootstrap.php` → 57 baris orkestrator; parser `.env` sendiri; `set_exception_handler` + `set_error_handler` (warning jadi exception hanya saat `APP_DEBUG`); `SET time_zone` disamakan dengan `APP_TIMEZONE`; batas rate limit dihitung `NOW() - INTERVAL` di SQL; html5-qrcode 2.3.8 + SweetAlert2 11.22.2 + 2 font variable di-self-host; satu `ASSET_VERSION`; `.htaccess` deny di `app/ storage/ docs/ handoffs/` tanpa bergantung `mod_rewrite`; `diagnosa.php` gate `APP_SETUP_TOKEN` |
+| Verifikasi | `php -l` 66/66 file bersih; `grep -c "cdn\.\|unpkg\|googleapis\|gstatic"` di `app`+`public` = 0; `grep -rn "v=2026" app` = 0; 10 halaman dirender dan judulnya cocok byte-per-byte dengan sebelumnya; seluruh asset HTTP 200; `check_deploy.php` = 25 lolos / 4 gagal (semua gagal memang konfigurasi dev); API `jenis=invoice` membuat dokumen dengan `nomor_urut` NULL; `diagnosa.php` 404 tanpa token, 401 dengan token salah, 200 dengan token benar |
+| Pelajaran | Agent eksekusi (codex) tetap mengubah 4 judul halaman (urutan kata, em-dash, "Rekap Nomor") dan mematikan pemindaian berkas foto yang sebenarnya tidak butuh kamera — seluruh diff wajib dibaca, bukan hanya "lulus verifikasi" |
+| Log Keyword | refactor hosting, ASSET_VERSION, diagnosa.php, php_version guard, _head.php, self-host font, parse_ini_file, set_exception_handler |
+| Deploy | BELUM — rangkaian commit lokal, belum dipush |
+
 ### Fix #8: QR unduhan Almutqon: modul hitam, logo proporsional, dan mudah dipindai
 Gejala: QR yang diunduh dari Dashboard memakai modul hijau dan titik sudut amber, logo Almutqon terlalu besar di tengah, dan hasil visual kurang presisi.
 

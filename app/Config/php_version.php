@@ -5,8 +5,9 @@ declare(strict_types=1);
  * app/Config/php_version.php — penjaga versi PHP.
  *
  * Berkas ini dimuat paling pertama, sebelum konfigurasi lain, karena
- *eilnya salah satu: menampilkan halaman baik, bukan 500空白 atau fatal error
- * yang tidak menjelaskan apa pun.
+ * setelahnya masih ada langkah pemuatan lain. Kegagalan di sini
+ * harus tampil sebagai halaman yang bisa dibaca, bukan 500 kosong atau fatal
+ * error yang tidak menjelaskan apa pun.
  *
  * Versi minimum 8.1 mengikuti penggunaan `never`, `str_starts_with`, dan
  * `array|false` di seluruh kode.
